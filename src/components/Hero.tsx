@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export const Hero = () => {
   return (
@@ -26,13 +27,17 @@ export const Hero = () => {
           </p>
           
           <div className="flex flex-col gap-4 sm:flex-row sm:justify-center animate-fade-in-up" style={{ animationDelay: '300ms' }}>
-            <Button size="lg" className="group bg-primary hover:bg-primary-dark text-primary-foreground">
-              Get Started
-              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Button>
-            <Button size="lg" variant="outline" className="border-primary/20 hover:bg-primary/5 hover:border-primary/40">
-              Watch Demo
-            </Button>
+            <Link to="/signup">
+              <Button size="lg" className="group bg-primary hover:bg-primary-dark text-primary-foreground">
+                Get Started
+                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Button>
+            </Link>
+            <Link to="/dashboard">
+              <Button size="lg" variant="outline" className="border-primary/20 hover:bg-primary/5 hover:border-primary/40">
+                Watch Demo
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
