@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { Menu, X, Zap } from "lucide-react";
+import { Menu, X, Search } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -9,14 +10,12 @@ export const Navbar = () => {
     <nav className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-primary">
-              <Zap className="h-5 w-5 text-white" />
-            </div>
-            <span className="text-xl font-bold text-foreground">
-              AI Recruit<span className="text-primary">Pro</span>
+          <Link to="/" className="flex items-center gap-2">
+            <Search className="h-8 w-8 text-primary" />
+            <span className="text-2xl font-bold text-foreground">
+              VELOCITY
             </span>
-          </div>
+          </Link>
 
           <div className="hidden items-center gap-8 md:flex">
             <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
@@ -34,12 +33,16 @@ export const Navbar = () => {
           </div>
 
           <div className="hidden items-center gap-4 md:flex">
-            <Button variant="ghost" className="text-foreground">
-              Sign In
-            </Button>
-            <Button className="bg-primary hover:bg-primary-dark text-primary-foreground">
-              Get Started
-            </Button>
+            <Link to="/login">
+              <Button variant="ghost" className="text-foreground">
+                Sign In
+              </Button>
+            </Link>
+            <Link to="/signup">
+              <Button className="bg-primary hover:bg-primary-dark text-primary-foreground">
+                Get Started
+              </Button>
+            </Link>
           </div>
 
           <button
@@ -71,12 +74,16 @@ export const Navbar = () => {
                 Contact
               </a>
               <div className="flex flex-col gap-2 pt-4">
-                <Button variant="ghost" className="w-full justify-start">
-                  Sign In
-                </Button>
-                <Button className="w-full bg-primary hover:bg-primary-dark text-primary-foreground">
-                  Get Started
-                </Button>
+                <Link to="/login">
+                  <Button variant="ghost" className="w-full justify-start">
+                    Sign In
+                  </Button>
+                </Link>
+                <Link to="/signup">
+                  <Button className="w-full bg-primary hover:bg-primary-dark text-primary-foreground">
+                    Get Started
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
