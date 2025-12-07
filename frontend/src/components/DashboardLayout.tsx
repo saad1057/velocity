@@ -20,16 +20,16 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           </Link>
           
           <nav className="hidden md:flex items-center gap-8">
-            <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link to="/features" className="text-muted-foreground hover:text-foreground transition-colors">
               Features
             </Link>
-            <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link to="/how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
               How it Works
             </Link>
-            <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link to="/technology" className="text-muted-foreground hover:text-foreground transition-colors">
               Technology
             </Link>
-            <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link to="/contact" className="text-muted-foreground hover:text-foreground transition-colors">
               Contact
             </Link>
           </nav>

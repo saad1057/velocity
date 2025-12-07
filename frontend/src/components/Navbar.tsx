@@ -18,18 +18,18 @@ export const Navbar = () => {
           </Link>
 
           <div className="hidden items-center gap-8 md:flex">
-            <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            <Link to="/features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Features
-            </a>
-            <a href="#analytics" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            </Link>
+            <Link to="/analytics" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Analytics
-            </a>
-            <a href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            </Link>
+            <Link to="/pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Pricing
-            </a>
-            <a href="#contact" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            </Link>
+            <Link to="/contact" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Contact
-            </a>
+            </Link>
           </div>
 
           <div className="hidden items-center gap-4 md:flex">
@@ -61,18 +61,18 @@ export const Navbar = () => {
         {isOpen && (
           <div className="border-t border-border py-4 md:hidden animate-fade-in">
             <div className="flex flex-col gap-4">
-              <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              <Link to="/features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                 Features
-              </a>
-              <a href="#analytics" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              </Link>
+              <Link to="/analytics" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                 Analytics
-              </a>
-              <a href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              </Link>
+              <Link to="/pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                 Pricing
-              </a>
-              <a href="#contact" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              </Link>
+              <Link to="/contact" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                 Contact
-              </a>
+              </Link>
               <div className="flex flex-col gap-2 pt-4">
                 <Link to="/login">
                   <Button variant="ghost" className="w-full justify-start">

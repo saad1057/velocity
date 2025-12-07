@@ -1,4 +1,5 @@
 import { Zap } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export const Footer = () => {
   return (
@@ -11,7 +12,7 @@ export const Footer = () => {
                 <Zap className="h-5 w-5 text-white" />
               </div>
               <span className="text-xl font-bold text-foreground">
-                AI Recruit<span className="text-primary">Pro</span>
+                Velocity
               </span>
             </div>
             <p className="mb-4 max-w-md text-sm text-muted-foreground">
@@ -19,7 +20,7 @@ export const Footer = () => {
               Faster hiring, better matches, and data-driven insights.
             </p>
             <p className="text-xs text-muted-foreground">
-              © 2024 AI RecruitPro. All rights reserved.
+              © 2024 Velocity. All rights reserved.
             </p>
           </div>
 
@@ -27,16 +28,16 @@ export const Footer = () => {
             <h3 className="mb-4 font-semibold text-foreground">Product</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
-                <a href="#" className="hover:text-foreground transition-colors">Features</a>
+                <Link to="/features" className="hover:text-foreground transition-colors">Features</Link>
               </li>
               <li>
-                <a href="#" className="hover:text-foreground transition-colors">Pricing</a>
+                <Link to="/pricing" className="hover:text-foreground transition-colors">Pricing</Link>
               </li>
               <li>
-                <a href="#" className="hover:text-foreground transition-colors">Security</a>
+                <Link to="/technology" className="hover:text-foreground transition-colors">Technology</Link>
               </li>
               <li>
-                <a href="#" className="hover:text-foreground transition-colors">Integrations</a>
+                <Link to="/how-it-works" className="hover:text-foreground transition-colors">How it Works</Link>
               </li>
             </ul>
           </div>
@@ -45,16 +46,16 @@ export const Footer = () => {
             <h3 className="mb-4 font-semibold text-foreground">Company</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
-                <a href="#" className="hover:text-foreground transition-colors">About</a>
+                <Link to="/" className="hover:text-foreground transition-colors">About</Link>
               </li>
               <li>
-                <a href="#" className="hover:text-foreground transition-colors">Blog</a>
+                <Link to="/contact" className="hover:text-foreground transition-colors">Contact</Link>
               </li>
               <li>
-                <a href="#" className="hover:text-foreground transition-colors">Careers</a>
+                <Link to="/login" className="hover:text-foreground transition-colors">Sign In</Link>
               </li>
               <li>
-                <a href="#" className="hover:text-foreground transition-colors">Contact</a>
+                <Link to="/signup" className="hover:text-foreground transition-colors">Get Started</Link>
               </li>
             </ul>
           </div>
