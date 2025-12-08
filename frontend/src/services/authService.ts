@@ -43,6 +43,11 @@ export interface SignupResponse {
   data: User;
 }
 
+export interface ForgotPasswordResponse {
+  success: boolean;
+  message: string;
+}
+
 export const signup = async (data: SignupData): Promise<SignupResponse> => {
   const response = await api.post<SignupResponse>('/auth/signup', data);
   return response.data;
@@ -59,6 +64,17 @@ export const logout = async (): Promise<void> => {
 
 export const getCurrentUser = async (): Promise<{ success: boolean; data: User }> => {
   const response = await api.get<{ success: boolean; data: User }>('/users/me');
+  return response.data;
+};
+
+export const forgotPassword = async (
+  email: string,
+  password: string
+): Promise<ForgotPasswordResponse> => {
+  const response = await api.post<ForgotPasswordResponse>('/auth/forgot-password', {
+    email,
+    password,
+  });
   return response.data;
 };
 

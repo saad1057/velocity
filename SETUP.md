@@ -4,16 +4,28 @@
 
 This is a full-stack AI recruitment platform with:
 - **Frontend**: React + TypeScript (Vite)
-- **Backend**: Node.js + Express.js + TypeScript
-- **Future AI Service**: Django microservice
+- **Backend**: Node.js + Express.js
+- **AI Service**: Python Flask microservice
 
-## Quick Start
-
-### Prerequisites
+## Prerequisites
 
 - Node.js (v18 or higher)
 - npm or yarn
 - MongoDB (local or cloud instance like MongoDB Atlas)
+- Python 3.9+ (for AI service)
+
+### MongoDB Installation
+
+1. **Install MongoDB**
+   - **Windows**: Download from [MongoDB Download Center](https://www.mongodb.com/try/download/community)
+   - **macOS**: `brew install mongodb-community`
+   - **Linux**: Follow [MongoDB Installation Guide](https://www.mongodb.com/docs/manual/installation/)
+
+2. **Start MongoDB**
+   - **Windows**: MongoDB should start as a service automatically
+   - **macOS/Linux**: `brew services start mongodb-community` or `sudo systemctl start mongod`
+
+## Quick Start
 
 ### 1. Frontend Setup
 
@@ -25,10 +37,10 @@ cd frontend
 npm install
 
 # Start development server
-npm run dev
+npm start
 ```
 
-Frontend will run on `http://localhost:8080` (or `http://localhost:5173` depending on Vite config)
+Frontend will run on `http://localhost:5173` (or `http://localhost:8080` depending on Vite config)
 
 ### 2. Backend Setup
 
@@ -46,29 +58,71 @@ cp env.example .env
 # - MONGODB_URI: Your MongoDB connection string
 # - JWT_SECRET: A strong random string for JWT tokens
 # - FRONTEND_URL: http://localhost:5173
+# - AI_SERVICE_URL: http://localhost:8001
 
 # Start backend server
-npm run dev
+npm start
 ```
 
-Backend will run on `http://localhost:5000`
+Backend will run on `http://localhost:3000`
 
-### 3. Environment Variables
+### 3. AI Service Setup
 
-#### Frontend (.env in root - optional)
-```
-VITE_API_URL=http://localhost:5000
+```bash
+# Navigate to ai-service directory
+cd ai-service
+
+# Create virtual environment
+python -m venv .venv
+
+# Activate virtual environment
+# Windows:
+.venv\Scripts\activate
+# macOS/Linux:
+source .venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Start AI service
+python app.py
 ```
 
-#### Backend (backend/.env)
+AI Service will run on `http://localhost:8001`
+
+## Environment Variables
+
+### Frontend (.env in root - optional)
 ```
-PORT=5000
+VITE_API_URL=http://localhost:3000
+```
+
+### Backend (backend/.env)
+```
+PORT=3000
 NODE_ENV=development
 MONGODB_URI=mongodb://localhost:27017/velocity
 JWT_SECRET=your-super-secret-jwt-key
 JWT_EXPIRE=7d
 FRONTEND_URL=http://localhost:5173
-AI_SERVICE_URL=http://localhost:8000
+AI_SERVICE_URL=http://localhost:8001
+```
+
+## MongoDB Connection Options
+
+### Local MongoDB
+Use the default connection string:
+```
+mongodb://localhost:27017/velocity
+```
+
+### MongoDB Atlas (Cloud)
+1. Create a free account at [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+2. Create a cluster
+3. Get your connection string
+4. Update `MONGODB_URI` in your `.env` file:
+```
+mongodb+srv://username:password@cluster.mongodb.net/velocity
 ```
 
 ## Project Structure
@@ -83,21 +137,30 @@ velocity/
 │   ├── public/           # Static assets
 │   └── ...
 ├── backend/              # Backend Express API
-│   ├── src/
-│   │   ├── controllers/  # Request handlers
-│   │   ├── routes/       # API routes
-│   │   ├── middleware/   # Custom middleware
-│   │   └── utils/        # Utilities (AI service client)
+│   ├── controllers/      # Request handlers
+│   ├── routes/           # API routes
+│   ├── middleware/       # Custom middleware
 │   └── ...
-└── ai-service/           # Future Django AI microservice
+└── ai-service/           # Python Flask AI microservice
+    ├── app.py            # Flask application
+    └── requirements.txt  # Python dependencies
 ```
 
 ## API Endpoints
 
 ### Authentication
-- `POST /api/auth/register` - Register
-- `POST /api/auth/login` - Login
-- `GET /api/auth/me` - Get current user
+- `POST /api/auth/signup` - Register a new user
+- `POST /api/auth/signin` - Login user
+- `POST /api/auth/logout` - Logout user
+- `GET /api/users/me` - Get current user
+
+### Profile
+- `GET /api/profile/:userId` - Get user profile
+- `PUT /api/profile/:userId` - Update user profile
+- `PUT /api/profile/:userId/password` - Change password
+
+### Resume Parsing
+- `POST /api/resume/parse` - Parse resume (PDF/DOCX)
 
 ### Jobs
 - `GET /api/jobs` - List jobs
@@ -108,58 +171,42 @@ velocity/
 - `GET /api/candidates` - List candidates
 - `GET /api/candidates/:id` - Get candidate details
 
-### Applications
-- `POST /api/applications` - Submit application
-- `GET /api/applications` - List applications
-
-See [backend/README.md](backend/README.md) for complete API documentation.
-
 ## Development Workflow
 
 1. **Start MongoDB** (if running locally)
-2. **Start Backend**: `cd backend && npm run dev`
-3. **Start Frontend**: `cd frontend && npm run dev`
-4. **Access**: Frontend at `http://localhost:8080` (or check Vite config)
-
-## Next Steps
-
-1. **Set up MongoDB connection** - Configure Mongoose models
-2. **Implement database models** - User, Job, Candidate, Application
-3. **Complete controller logic** - Replace placeholder implementations
-4. **Add file upload** - Resume uploads with Multer
-5. **Connect frontend to backend** - Update API calls in React components
-6. **Set up Django AI service** - For AI features (resume parsing, matching, etc.)
-
-## Future Django AI Microservice
-
-The Django service will handle:
-- Resume parsing and data extraction
-- AI-powered candidate-job matching
-- NLP-based screening
-- Skills extraction
-- Interview question generation
-
-Integration will be via HTTP API from the Express backend.
+2. **Start AI Service**: `cd ai-service && python app.py`
+3. **Start Backend**: `cd backend && npm start`
+4. **Start Frontend**: `cd frontend && npm start`
+5. **Access**: Frontend at `http://localhost:5173`
 
 ## Troubleshooting
 
 ### Backend won't start
 - Check if MongoDB is running
 - Verify `.env` file exists and has correct values
-- Check if port 5000 is available
+- Check if port 3000 is available
+
+### MongoDB not connecting
+- Make sure MongoDB is running: `mongosh` or check MongoDB service status
+- Verify the connection string in `.env`
+- Check MongoDB logs for errors
+- For MongoDB Atlas, ensure IP is whitelisted
 
 ### CORS errors
 - Ensure `FRONTEND_URL` in backend `.env` matches your frontend URL
-- Check CORS configuration in `backend/src/index.ts`
+- Check CORS configuration in `backend/index.js`
 
-### Database connection issues
-- Verify MongoDB URI is correct
-- Check if MongoDB service is running
-- For MongoDB Atlas, ensure IP is whitelisted
+### Port already in use
+- Change `PORT` in backend `.env` file
+- Update `FRONTEND_URL` to match your frontend URL
+
+### AI Service not working
+- Make sure Python virtual environment is activated
+- Verify all dependencies are installed: `pip install -r requirements.txt`
+- Check if port 8001 is available
 
 ## Support
 
 For issues or questions, refer to:
 - [Backend README](backend/README.md)
 - [AI Service README](ai-service/README.md)
-

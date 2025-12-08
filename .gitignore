@@ -44,3 +44,8 @@ ai-service/__pycache__/
 ai-service/*.pyc
 ai-service/temp.py
 ai-service/*.pdf
+
+# Server
+server/node_modules
+server/dist
+server/.env

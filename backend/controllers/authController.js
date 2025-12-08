@@ -108,6 +108,54 @@ const handleSignin = async (req, res) => {
   }
 };
 
+const handleForgotPassword = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide email and new password'
+      });
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide a valid email address'
+      });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must be at least 6 characters long'
+      });
+    }
+
+    const user = await authService.resetPassword(email, password);
+
+    res.status(200).json({
+      success: true,
+      message: 'Password updated successfully',
+      data: user
+    });
+  } catch (error) {
+    if (error.message === 'User not found') {
+      return res.status(404).json({
+        success: false,
+        message: error.message
+      });
+    }
+    res.status(500).json({
+      success: false,
+      message: 'Error resetting password',
+      error: error.message
+    });
+  }
+};
+
 const handleLogout = async (req, res) => {
   try {
     res.clearCookie('token', {
@@ -132,6 +180,7 @@ const handleLogout = async (req, res) => {
 module.exports = {
   handleSignup,
   handleSignin,
+  handleForgotPassword,
   handleLogout
 };
 
