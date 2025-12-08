@@ -1,4 +1,4 @@
-# Welcome to your Lovable project
+# Welcome to Velocity
 
 ## Project info
 
@@ -36,6 +36,34 @@ npm i
 npm run dev
 ```
 
+## Backend Setup
+
+The backend API is located in the `backend/` directory.
+
+1. **Navigate to backend directory**:
+   ```sh
+   cd backend
+   ```
+
+2. **Install dependencies**:
+   ```sh
+   npm install
+   ```
+
+3. **Create environment file**:
+   ```sh
+   cp env.example .env
+   ```
+   Then edit `.env` and configure your environment variables (MongoDB URI, JWT secret, etc.)
+
+4. **Start the backend server**:
+   ```sh
+   npm run dev
+   ```
+   The API will run on `http://localhost:5000` by default.
+
+See [backend/README.md](backend/README.md) for detailed backend documentation.
+
 **Edit a file directly in GitHub**
 
 - Navigate to the desired file(s).
@@ -52,13 +80,22 @@ npm run dev
 
 ## What technologies are used for this project?
 
-This project is built with:
-
+### Frontend
 - Vite
 - TypeScript
 - React
 - shadcn-ui
 - Tailwind CSS
+
+### Backend
+- Node.js
+- Express.js
+- TypeScript
+- MongoDB (via Mongoose)
+- JWT Authentication
+
+### Future AI Service
+- Django (planned microservice for AI features)
 
 ## How can I deploy this project?
 
