@@ -6,14 +6,15 @@ const {
   handleGetUserById,
   handleUpdateUser,
   handleDeleteUser,
-  handleGetCurrentUser
+  handleGetCurrentUser,
+  handleUpdateCurrentUser
 } = require('../controllers/userController');
 const { authenticate, isAdmin } = require('../middleware/auth');
+const upload = require('../middleware/upload');
 
-// Get current user - accessible to all authenticated users
 router.get('/me', authenticate, handleGetCurrentUser);
+router.put('/me', authenticate, upload.single('picture'), handleUpdateCurrentUser);
 
-// Admin only routes - require both authentication and admin role
 router.post('/', authenticate, isAdmin, handleCreateUser);
 router.get('/', authenticate, isAdmin, handleGetAllUsers);
 router.get('/:id', authenticate, isAdmin, handleGetUserById);

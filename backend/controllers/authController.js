@@ -1,14 +1,9 @@
 const authService = require('../services/authService');
 
-/**
- * Handle user signup (recruiter registration)
- * POST /api/auth/signup
- */
 const handleSignup = async (req, res) => {
   try {
     const { firstname, lastname, companyname, email, password } = req.body;
 
-    // Validate required fields
     if (!firstname || !email || !password) {
       return res.status(400).json({
         success: false,
@@ -16,7 +11,6 @@ const handleSignup = async (req, res) => {
       });
     }
 
-    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return res.status(400).json({
@@ -25,7 +19,6 @@ const handleSignup = async (req, res) => {
       });
     }
 
-    // Validate password length
     if (password.length < 6) {
       return res.status(400).json({
         success: false,
@@ -33,7 +26,6 @@ const handleSignup = async (req, res) => {
       });
     }
 
-    // Create user
     const user = await authService.signup({
       firstname,
       lastname,
@@ -48,29 +40,35 @@ const handleSignup = async (req, res) => {
       data: user
     });
   } catch (error) {
+    console.error('Signup error:', error);
+    
     if (error.message === 'User with this email already exists') {
       return res.status(409).json({
         success: false,
         message: error.message
       });
     }
+    
+    if (error.name === 'MongoServerError' || error.name === 'MongoNetworkError') {
+      return res.status(503).json({
+        success: false,
+        message: 'Database connection error. Please check if MongoDB is running.',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
+    }
+    
     res.status(500).json({
       success: false,
       message: 'Error during signup',
-      error: error.message
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
     });
   }
 };
 
-/**
- * Handle user signin (recruiter login)
- * POST /api/auth/signin
- */
 const handleSignin = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Validate required fields
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -78,15 +76,13 @@ const handleSignin = async (req, res) => {
       });
     }
 
-    // Authenticate user
     const { user, token } = await authService.signin(email, password);
 
-    // Set token in cookie (optional, can also send in response)
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
     res.status(200).json({
@@ -112,8 +108,30 @@ const handleSignin = async (req, res) => {
   }
 };
 
+const handleLogout = async (req, res) => {
+  try {
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax'
+    });
+
+    res.status(200).json({
+      success: true,
+      message: 'Logged out successfully'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error during logout',
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   handleSignup,
-  handleSignin
+  handleSignin,
+  handleLogout
 };
 

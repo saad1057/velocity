@@ -64,22 +64,14 @@ const getUserById = async (userId) => {
   return user;
 };
 
-/**
- * Update user by ID
- * @param {string} userId - User ID
- * @param {Object} updateData - Data to update
- * @returns {Promise<Object>} - Updated user (without password)
- */
 const updateUser = async (userId, updateData) => {
-  const { firstname, lastname, companyname, email, password, role } = updateData;
+  const { firstname, lastname, companyname, email, password, role, picture } = updateData;
 
-  // Check if user exists
   const user = await User.findById(userId);
   if (!user) {
     throw new Error('User not found');
   }
 
-  // If email is being updated, check if it's already taken
   if (email && email !== user.email) {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -87,20 +79,18 @@ const updateUser = async (userId, updateData) => {
     }
   }
 
-  // Build update object
   const updateObject = {};
   if (firstname !== undefined) updateObject.firstname = firstname;
   if (lastname !== undefined) updateObject.lastname = lastname;
   if (companyname !== undefined) updateObject.companyname = companyname;
   if (email !== undefined) updateObject.email = email;
   if (role !== undefined) updateObject.role = role;
+  if (picture !== undefined) updateObject.picture = picture;
 
-  // Hash password if provided
   if (password) {
     updateObject.password = await hashPassword(password);
   }
 
-  // Update user
   const updatedUser = await User.findByIdAndUpdate(
     userId,
     updateObject,

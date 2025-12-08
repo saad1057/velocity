@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { handleSignup, handleSignin } = require('../controllers/authController');
+const { handleSignup, handleSignin, handleLogout } = require('../controllers/authController');
 
-// Public routes - no authentication required
 router.post('/signup', handleSignup);
 router.post('/signin', handleSignin);
+router.post('/logout', handleLogout);
 
 module.exports = router;
 

@@ -3,14 +3,27 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Target, FileText, Sparkles, Mail } from "lucide-react";
 import { Users, Trophy, Star } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 const Dashboard = () => {
+  const { user } = useAuth();
+  
+  const getUserDisplayName = () => {
+    if (!user) return "there";
+    if (user.firstname) {
+      return user.firstname;
+    }
+    return user.email.split("@")[0];
+  };
+
   return (
     <DashboardLayout>
       <div className="space-y-8 animate-fade-in">
         <div>
           <h1 className="text-4xl font-bold text-foreground mb-2">Dashboard Overview</h1>
-          <p className="text-muted-foreground">Welcome back, John! Here's what's happening with your recruitment.</p>
+          <p className="text-muted-foreground">
+            Welcome back, {getUserDisplayName()}! Here's what's happening with your recruitment.
+          </p>
         </div>
 
         {/* Action Buttons */}

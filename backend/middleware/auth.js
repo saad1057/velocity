@@ -1,13 +1,8 @@
 const { verifyToken } = require('../utils/jwt');
 const User = require('../model/user');
 
-/**
- * Middleware to authenticate requests using JWT token
- * Verifies token and attaches user to request object
- */
 const authenticate = async (req, res, next) => {
   try {
-    // Get token from Authorization header
     const authHeader = req.headers.authorization;
     
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -17,13 +12,10 @@ const authenticate = async (req, res, next) => {
       });
     }
 
-    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
-
-    // Verify token
+    const token = authHeader.substring(7);
     const decoded = verifyToken(token);
-
-    // Find user and attach to request
     const user = await User.findById(decoded.userId).select('-password');
+    
     if (!user) {
       return res.status(401).json({ 
         success: false, 
@@ -54,10 +46,6 @@ const authenticate = async (req, res, next) => {
   }
 };
 
-/**
- * Middleware to check if user is admin
- * Must be used after authenticate middleware
- */
 const isAdmin = (req, res, next) => {
   if (!req.user) {
     return res.status(401).json({ 
