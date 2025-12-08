@@ -51,8 +51,24 @@ const signin = async (email, password) => {
   };
 };
 
+const resetPassword = async (email, newPassword) => {
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  const hashedPassword = await hashPassword(newPassword);
+  user.password = hashedPassword;
+  await user.save();
+
+  const userObject = user.toObject();
+  delete userObject.password;
+  return userObject;
+};
+
 module.exports = {
   signup,
-  signin
+  signin,
+  resetPassword
 };
 
