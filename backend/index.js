@@ -9,13 +9,32 @@ const userRoutes = require('./routes/userRoutes');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Middleware
-app.use(cors());
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  'http://localhost:5173',
+  'http://localhost:8080',
+  'http://localhost:3000',
+].filter(Boolean);
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV === 'development') {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Connect to MongoDB
 connectToMongoDb(process.env.MONGODB_URI || "mongodb://localhost:27017/Velocity")
   .then(() => {
     console.log('Connected to MongoDB successfully');
@@ -25,11 +44,9 @@ connectToMongoDb(process.env.MONGODB_URI || "mongodb://localhost:27017/Velocity"
     process.exit(1);
   });
 
-// Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 
-// Health check route
 app.get('/', (req, res) => {
   res.json({ message: 'Velocity API is running' });
 });

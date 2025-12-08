@@ -1,23 +1,60 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Search } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Search, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
+import { useAuth } from "@/context/AuthContext";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
+    companyName: "",
     email: "",
     password: "",
     confirmPassword: ""
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
+  const { register, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    }
+  }, [isAuthenticated, navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle signup logic
+    setPasswordError("");
+
+    if (formData.password !== formData.confirmPassword) {
+      setPasswordError("Passwords do not match");
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setPasswordError("Password must be at least 6 characters long");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await register({
+        firstname: formData.firstName,
+        lastname: formData.lastName || undefined,
+        companyname: formData.companyName || undefined,
+        email: formData.email,
+        password: formData.password,
+      });
+    } catch (error) {
+      // Error is handled by AuthContext toast
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,6 +106,16 @@ const Signup = () => {
               </div>
 
               <div className="space-y-2">
+                <Label htmlFor="companyName">Company Name (Optional)</Label>
+                <Input
+                  id="companyName"
+                  placeholder="Acme Inc."
+                  value={formData.companyName}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>
                 <Input
                   id="email"
@@ -85,7 +132,7 @@ const Signup = () => {
                 <Input
                   id="password"
                   type="password"
-                  placeholder="Create a password"
+                  placeholder="Create a password (min. 6 characters)"
                   value={formData.password}
                   onChange={handleChange}
                   required
@@ -102,10 +149,25 @@ const Signup = () => {
                   onChange={handleChange}
                   required
                 />
+                {passwordError && (
+                  <p className="text-sm text-destructive">{passwordError}</p>
+                )}
               </div>
 
-              <Button type="submit" className="w-full bg-primary hover:bg-primary/90" size="lg">
-                Sign Up
+              <Button 
+                type="submit" 
+                className="w-full bg-primary hover:bg-primary/90" 
+                size="lg"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Creating account...
+                  </>
+                ) : (
+                  "Sign Up"
+                )}
               </Button>
 
               <div className="relative">
