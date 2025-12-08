@@ -13,7 +13,7 @@ export const Navbar = () => {
           <Link to="/" className="flex items-center gap-2">
             <Search className="h-8 w-8 text-primary" />
             <span className="text-2xl font-bold text-foreground">
-              VELOCITY
+              Velocity
             </span>
           </Link>
 
@@ -21,8 +21,8 @@ export const Navbar = () => {
             <Link to="/features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Features
             </Link>
-            <Link to="/analytics" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              Analytics
+            <Link to="/how-it-works" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              How it Works
             </Link>
             <Link to="/pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Pricing
@@ -64,8 +64,8 @@ export const Navbar = () => {
               <Link to="/features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                 Features
               </Link>
-              <Link to="/analytics" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                Analytics
+              <Link to="/how-it-works" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                How it Works
               </Link>
               <Link to="/pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                 Pricing

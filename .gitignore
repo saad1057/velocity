@@ -22,3 +22,25 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+ENV/
+env/
+*.egg
+
+# AI Service
+ai-service/.venv/
+ai-service/__pycache__/
+ai-service/*.pyc
+ai-service/temp.py
+ai-service/*.pdf

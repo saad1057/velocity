@@ -29,7 +29,11 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       const isProfileUpdate = error.config?.url?.includes('/users/me') && error.config?.method === 'put';
       
-      if (!isProfileUpdate) {
+      // Don't sign out on public pages
+      const publicRoutes = ['/features', '/pricing', '/contact', '/technology', '/how-it-works', '/'];
+      const isPublicRoute = publicRoutes.some(route => window.location.pathname === route);
+      
+      if (!isProfileUpdate && !isPublicRoute) {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         if (!window.location.pathname.includes('/login') && !window.location.pathname.includes('/signup')) {

@@ -1,50 +1,39 @@
-# Django AI Microservice
+# AI Microservice (Python)
 
-This directory will contain the Django-based AI microservice for the Velocity recruitment platform.
+This folder hosts a lightweight Flask microservice that exposes resume parsing via **pyresparser**. The Node backend calls this service over HTTP.
 
-## Planned Features
+## Quick start
+```bash
+cd ai-service
+python -m venv .venv
+.venv\Scripts\activate  # Windows
+pip install -r requirements.txt
 
-- **Resume Parsing**: Extract information from PDF/DOCX resumes
-- **Candidate Matching**: AI-powered job-candidate matching
-- **NLP Processing**: Text analysis for candidate screening
-- **Skills Extraction**: Automatic skills detection from resumes
-- **Interview Questions**: AI-generated interview questions based on job requirements
+# Download spaCy and NLTK data (once)
+python -m spacy download en_core_web_sm
+python - <<'PY'
+import nltk
+nltk.download('stopwords')
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
+PY
 
-## Integration
+# Run the service
+python app.py   # listens on http://0.0.0.0:8001/parse
+```
 
-This service will be called from the Express.js backend via HTTP API.
+## API
+- `POST /parse`
+  - Body (JSON):
+    ```json
+    {
+      "documentBase64": "<base64-of-pdf-or-docx>",
+      "fileName": "resume.pdf"
+    }
+    ```
+  - Response: `{ success: true, data: <parsed fields> }`
 
-## Setup (Future)
-
-1. Create virtual environment:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-2. Install dependencies:
-   ```bash
-   pip install django djangorestframework
-   ```
-
-3. Run migrations:
-   ```bash
-   python manage.py migrate
-   ```
-
-4. Start development server:
-   ```bash
-   python manage.py runserver
-   ```
-
-## API Endpoints (Planned)
-
-- `POST /api/parse-resume` - Parse and extract data from resume
-- `POST /api/match-candidates` - Match candidates to job
-- `POST /api/extract-skills` - Extract skills from text
-- `POST /api/generate-questions` - Generate interview questions
-- `POST /api/analyze-sentiment` - Analyze candidate responses
-
-
-
-
+## Notes
+- Supports PDF/DOCX.
+- Keep files reasonably small (~5MB).
+- This can later be replaced or extended with Django/DRF if you need more endpoints.

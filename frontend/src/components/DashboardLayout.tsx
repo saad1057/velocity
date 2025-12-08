@@ -43,29 +43,30 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   return (
     <div className="min-h-screen bg-background">
       {/* Top Navbar */}
-      <header className="bg-card border-b border-border sticky top-0 z-50">
-        <div className="flex items-center justify-between px-6 py-4">
-          <Link to="/dashboard" className="flex items-center gap-2">
-            <Search className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold text-foreground">VELOCITY</span>
-          </Link>
-          
-          <nav className="hidden md:flex items-center gap-8">
-            <Link to="/features" className="text-muted-foreground hover:text-foreground transition-colors">
-              Features
+      <nav className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
+        <div className="container mx-auto px-4">
+          <div className="flex h-16 items-center justify-between">
+            <Link to="/" className="flex items-center gap-2">
+              <Search className="h-8 w-8 text-primary" />
+              <span className="text-2xl font-bold text-foreground">Velocity</span>
             </Link>
-            <Link to="/how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
-              How it Works
-            </Link>
-            <Link to="/technology" className="text-muted-foreground hover:text-foreground transition-colors">
-              Technology
-            </Link>
-            <Link to="/contact" className="text-muted-foreground hover:text-foreground transition-colors">
-              Contact
-            </Link>
-          </nav>
+            
+            <div className="hidden md:flex items-center gap-8">
+              <Link to="/features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                Features
+              </Link>
+              <Link to="/how-it-works" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                How it Works
+              </Link>
+              <Link to="/pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                Pricing
+              </Link>
+              <Link to="/contact" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                Contact
+              </Link>
+            </div>
 
-          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4">
             <button className="p-2 hover:bg-muted rounded-lg transition-colors">
               <Bell className="h-5 w-5 text-accent" />
             </button>
@@ -123,9 +124,10 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            </div>
           </div>
         </div>
-      </header>
+      </nav>
 
       {/* Main Layout */}
       <div className="flex">

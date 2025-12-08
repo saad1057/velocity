@@ -1,10 +1,16 @@
 import { Link, useLocation } from "react-router-dom";
 import { LayoutDashboard, Briefcase, Users, Trophy, BarChart3, Mail, FileText, Bot, Settings, User, LogOut } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 const Sidebar = () => {
   const location = useLocation();
+  const { logout } = useAuth();
   
   const isActive = (path: string) => location.pathname === path;
+  
+  const handleLogout = async () => {
+    await logout();
+  };
   
   const mainMenuItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
@@ -23,7 +29,6 @@ const Sidebar = () => {
   const settingsItems = [
     { icon: Settings, label: "Preferences", path: "/preferences" },
     { icon: User, label: "Profile", path: "/profile" },
-    { icon: LogOut, label: "Logout", path: "/logout" },
   ];
 
   return (
@@ -87,6 +92,13 @@ const Sidebar = () => {
               <span className="font-medium">{item.label}</span>
             </Link>
           ))}
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-muted-foreground hover:bg-muted hover:text-foreground w-full text-left"
+          >
+            <LogOut className="h-5 w-5" />
+            <span className="font-medium">Logout</span>
+          </button>
         </div>
       </nav>
     </aside>

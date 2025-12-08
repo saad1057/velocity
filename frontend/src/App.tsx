@@ -18,6 +18,11 @@ import HowItWorks from "./pages/HowItWorks";
 import Technology from "./pages/Technology";
 import Contact from "./pages/Contact";
 import Pricing from "./pages/Pricing";
+import ResumeParser from "./pages/ResumeParser";
+import EmailTemplates from "./pages/EmailTemplates";
+import AIAssistant from "./pages/AIAssistant";
+import Assessments from "./pages/Assessments";
+import Preferences from "./pages/Preferences";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -78,10 +83,50 @@ const App = () => (
               } 
             />
             <Route 
+              path="/resume-parser" 
+              element={
+                <ProtectedRoute>
+                  <ResumeParser />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
               path="/profile" 
               element={
                 <ProtectedRoute>
                   <Profile />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/email-templates" 
+              element={
+                <ProtectedRoute>
+                  <EmailTemplates />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/ai-assistant" 
+              element={
+                <ProtectedRoute>
+                  <AIAssistant />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/assessments" 
+              element={
+                <ProtectedRoute>
+                  <Assessments />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/preferences" 
+              element={
+                <ProtectedRoute>
+                  <Preferences />
                 </ProtectedRoute>
               } 
             />
