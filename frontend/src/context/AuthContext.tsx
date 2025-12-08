@@ -39,8 +39,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     const initAuth = async () => {
-      const storedToken = localStorage.getItem('token');
-      const storedUser = localStorage.getItem('user');
+      const storedToken = sessionStorage.getItem('token');
+      const storedUser = sessionStorage.getItem('user');
 
       if (storedToken && storedUser) {
         try {
@@ -50,7 +50,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           const response = await getCurrentUser();
           if (response.success) {
             setUser(response.data);
-            localStorage.setItem('user', JSON.stringify(response.data));
+            sessionStorage.setItem('user', JSON.stringify(response.data));
           } else {
             clearAuth();
           }
@@ -67,8 +67,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const clearAuth = () => {
     setUser(null);
     setToken(null);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
   };
 
   const login = async (data: SigninData) => {
@@ -78,8 +78,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const { user: userData, token: tokenData } = response.data;
         setUser(userData);
         setToken(tokenData);
-        localStorage.setItem('token', tokenData);
-        localStorage.setItem('user', JSON.stringify(userData));
+        sessionStorage.setItem('token', tokenData);
+        sessionStorage.setItem('user', JSON.stringify(userData));
         
         toast({
           title: 'Success',
@@ -141,7 +141,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (response.success) {
         setUser(response.data);
         const userData = { ...response.data };
-        localStorage.setItem('user', JSON.stringify(userData));
+        sessionStorage.setItem('user', JSON.stringify(userData));
       }
     } catch (error) {
       console.error('Failed to refresh user:', error);

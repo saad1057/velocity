@@ -12,7 +12,7 @@ const api: AxiosInstance = axios.create({
 
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -30,8 +30,8 @@ api.interceptors.response.use(
       const isProfileUpdate = error.config?.url?.includes('/users/me') && error.config?.method === 'put';
       
       if (!isProfileUpdate) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('user');
         if (!window.location.pathname.includes('/login') && !window.location.pathname.includes('/signup')) {
           window.location.href = '/login';
         }
