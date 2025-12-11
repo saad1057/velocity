@@ -76,3 +76,6 @@ const EmailTemplates = () => {
 
 export default EmailTemplates;
 
+
+
+
