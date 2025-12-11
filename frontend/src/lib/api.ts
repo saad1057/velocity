@@ -12,7 +12,7 @@ const api: AxiosInstance = axios.create({
 
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -34,8 +34,8 @@ api.interceptors.response.use(
       const isPublicRoute = publicRoutes.some(route => window.location.pathname === route);
       
       if (!isProfileUpdate && !isPublicRoute) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('user');
         if (!window.location.pathname.includes('/login') && !window.location.pathname.includes('/signup')) {
           window.location.href = '/login';
         }
