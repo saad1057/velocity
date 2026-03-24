@@ -1,133 +1,15 @@
 import { ReactNode } from "react";
-import { Link } from "react-router-dom";
-import { Search, Bell, LogOut, User, Settings } from "lucide-react";
 import Sidebar from "./Sidebar";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { useAuth } from "@/context/AuthContext";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import { Button } from "./ui/button";
+import { Navbar } from "./Navbar";
 
 interface DashboardLayoutProps {
   children: ReactNode;
 }
 
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
-  const { user, logout, isAdmin } = useAuth();
-
-  const getUserInitials = () => {
-    if (!user) return "U";
-    const first = user.firstname?.[0] || "";
-    const last = user.lastname?.[0] || "";
-    return (first + last).toUpperCase() || user.email[0].toUpperCase();
-  };
-
-  const getUserDisplayName = () => {
-    if (!user) return "User";
-    if (user.firstname && user.lastname) {
-      return `${user.firstname} ${user.lastname}`;
-    }
-    return user.firstname || user.email;
-  };
-
-  const handleLogout = async () => {
-    await logout();
-  };
-
   return (
     <div className="min-h-screen bg-background">
-      {/* Top Navbar */}
-      <nav className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
-        <div className="container mx-auto px-4">
-          <div className="flex h-16 items-center justify-between">
-            <Link to="/" className="flex items-center gap-2">
-              <Search className="h-8 w-8 text-primary" />
-              <span className="text-2xl font-bold text-foreground">Velocity</span>
-            </Link>
-            
-            <div className="hidden md:flex items-center gap-8">
-              <Link to="/features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                Features
-              </Link>
-              <Link to="/how-it-works" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                How it Works
-              </Link>
-              <Link to="/pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                Pricing
-              </Link>
-              <Link to="/contact" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                Contact
-              </Link>
-            </div>
-
-            <div className="flex items-center gap-4">
-            <button className="p-2 hover:bg-muted rounded-lg transition-colors">
-              <Bell className="h-5 w-5 text-accent" />
-            </button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center gap-3 h-auto p-2 hover:bg-muted">
-                  <Avatar>
-                    {user?.picture?.data && typeof user.picture.data === 'string' ? (
-                      <AvatarImage 
-                        src={`data:${user.picture.contentType};base64,${user.picture.data}`} 
-                        alt={getUserDisplayName()}
-                      />
-                    ) : null}
-                    <AvatarFallback className="bg-primary text-primary-foreground">
-                      {getUserInitials()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="hidden md:flex flex-col items-start">
-                    <span className="text-sm font-medium text-foreground">
-                      {getUserDisplayName()}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      {isAdmin ? "Admin" : "Recruiter"}
-                    </span>
-                  </div>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium">{getUserDisplayName()}</p>
-                    <p className="text-xs text-muted-foreground">{user?.email}</p>
-                    {user?.companyname && (
-                      <p className="text-xs text-muted-foreground">{user.companyname}</p>
-                    )}
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link to="/profile" className="cursor-pointer">
-                    <User className="mr-2 h-4 w-4" />
-                    Profile
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/profile" className="cursor-pointer">
-                    <Settings className="mr-2 h-4 w-4" />
-                    Settings
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Logout
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Main Layout */}
       <div className="flex">
