@@ -1,3 +1,5 @@
 flask
 unstructured
+pypdf
+python-docx
 
