@@ -1,9 +1,18 @@
 import DashboardLayout from "@/components/DashboardLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Target, FileText, Sparkles, Mail } from "lucide-react";
 import { Users, Trophy, Star } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import JobSpecForm from "@/components/recruitment/JobSpecForm";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -28,9 +37,22 @@ const Dashboard = () => {
 
         {/* Action Buttons */}
         <div className="flex gap-4">
-          <Button size="lg" className="bg-primary hover:bg-primary/90">
-            Create Job Specification
-          </Button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button size="lg" className="bg-primary hover:bg-primary/90">
+                Create Job Specification
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Create Job Specification</DialogTitle>
+                <DialogDescription>
+                  Fill this form to define your candidate search criteria.
+                </DialogDescription>
+              </DialogHeader>
+              <JobSpecForm />
+            </DialogContent>
+          </Dialog>
           <Button size="lg" variant="outline">
             Export Report
           </Button>

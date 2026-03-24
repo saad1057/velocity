@@ -6,6 +6,7 @@ const { connectToMongoDb } = require('./config/connect');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const resumeRoutes = require('./routes/resumeRoutes');
+const recruitmentRoutes = require('./routes/recruitmentRoutes');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -48,6 +49,7 @@ connectToMongoDb(process.env.MONGODB_URI || "mongodb://localhost:27017/Velocity"
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/resume', resumeRoutes);
+app.use('/api/recruitment', recruitmentRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: 'Velocity API is running' });
