@@ -2,7 +2,7 @@ const authService = require('../services/authService');
 
 const handleSignup = async (req, res) => {
   try {
-    const { firstname, lastname, companyname, email, password } = req.body;
+    const { firstname, lastname, companyname, email, password, role, companyCode } = req.body;
 
     if (!firstname || !email || !password) {
       return res.status(400).json({
@@ -31,7 +31,9 @@ const handleSignup = async (req, res) => {
       lastname,
       companyname,
       email,
-      password
+      password,
+      role,
+      companyCode
     });
 
     res.status(201).json({
@@ -42,8 +44,10 @@ const handleSignup = async (req, res) => {
   } catch (error) {
     console.error('Signup error:', error);
     
-    if (error.message === 'User with this email already exists') {
-      return res.status(409).json({
+    if (error.message === 'User with this email already exists' || 
+        error.message === 'Company code is required for employee signup' || 
+        error.message === 'Invalid company code') {
+      return res.status(error.message.includes('already exists') ? 409 : 400).json({
         success: false,
         message: error.message
       });
@@ -94,7 +98,7 @@ const handleSignin = async (req, res) => {
       }
     });
   } catch (error) {
-    if (error.message === 'Invalid email or password') {
+    if (error.message === 'Invalid email or password' || error.message === 'Pending approval' || error.message === 'Rejected by admin') {
       return res.status(401).json({
         success: false,
         message: error.message
