@@ -14,8 +14,10 @@ const Signup = () => {
     companyName: "",
     email: "",
     password: "",
-    confirmPassword: ""
+    confirmPassword: "",
+    companyCode: ""
   });
+  const [role, setRole] = useState<"admin" | "employee">("admin");
   const [isLoading, setIsLoading] = useState(false);
   const [passwordError, setPasswordError] = useState("");
   const { register, isAuthenticated } = useAuth();
@@ -41,6 +43,11 @@ const Signup = () => {
       return;
     }
 
+    if (role === 'employee' && !formData.companyCode) {
+      setPasswordError("Company code is required for employee accounts");
+      return;
+    }
+
     setIsLoading(true);
     try {
       await register({
@@ -49,6 +56,8 @@ const Signup = () => {
         companyname: formData.companyName || undefined,
         email: formData.email,
         password: formData.password,
+        role: role,
+        companyCode: role === "employee" ? formData.companyCode : undefined,
       });
     } catch (error) {
       // Error is handled by AuthContext toast
@@ -82,6 +91,23 @@ const Signup = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="flex bg-muted p-1 rounded-lg mb-6">
+                <button
+                  type="button"
+                  className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${role === 'admin' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                  onClick={() => setRole('admin')}
+                >
+                  Admin Signup
+                </button>
+                <button
+                  type="button"
+                  className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${role === 'employee' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                  onClick={() => setRole('employee')}
+                >
+                  Employee Signup
+                </button>
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">First Name</Label>
@@ -105,15 +131,28 @@ const Signup = () => {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="companyName">Company Name (Optional)</Label>
-                <Input
-                  id="companyName"
-                  placeholder="Acme Inc."
-                  value={formData.companyName}
-                  onChange={handleChange}
-                />
-              </div>
+              {role === 'admin' ? (
+                <div className="space-y-2">
+                  <Label htmlFor="companyName">Company Name (Optional)</Label>
+                  <Input
+                    id="companyName"
+                    placeholder="Acme Inc."
+                    value={formData.companyName}
+                    onChange={handleChange}
+                  />
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <Label htmlFor="companyCode">Company Code</Label>
+                  <Input
+                    id="companyCode"
+                    placeholder="1234"
+                    value={formData.companyCode}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              )}
 
               <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>

@@ -24,6 +24,8 @@ import EmailTemplates from "./pages/EmailTemplates";
 import AIAssistant from "./pages/AIAssistant";
 import Assessments from "./pages/Assessments";
 import Preferences from "./pages/Preferences";
+import Employees from "./pages/Employees";
+import Requests from "./pages/Requests";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -46,10 +48,23 @@ const App = () => (
             <Route path="/contact" element={<Contact />} />
             <Route path="/pricing" element={<Pricing />} />
             
-            {/* For admin-only routes, use: */}
-            {/* <ProtectedRoute adminOnly={true}>
-              <AdminOnlyComponent />
-            </ProtectedRoute> */}
+            {/* For admin-only routes */}
+            <Route 
+              path="/employees" 
+              element={
+                <ProtectedRoute>
+                  <Employees />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/requests" 
+              element={
+                <ProtectedRoute>
+                  <Requests />
+                </ProtectedRoute>
+              } 
+            />
             
             {/* Protected routes - accessible to all authenticated users (recruiters and admins) */}
             <Route 
