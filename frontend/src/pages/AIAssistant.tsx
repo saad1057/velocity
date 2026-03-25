@@ -4,31 +4,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Bot, Send, Sparkles } from "lucide-react";
 import { useState } from "react";
+import { useChatbot } from "@/hooks/useChatbot";
 
 const AIAssistant = () => {
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      role: "assistant",
-      content: "Hello! I'm your AI recruitment assistant. How can I help you today?"
-    }
-  ]);
+  const { messages, loading, sendMessage } = useChatbot();
 
   const handleSend = () => {
     if (!message.trim()) return;
-    
-    setMessages([...messages, { id: messages.length + 1, role: "user", content: message }]);
+
+    sendMessage(message);
     setMessage("");
-    
-    // Simulate AI response
-    setTimeout(() => {
-      setMessages(prev => [...prev, {
-        id: prev.length + 1,
-        role: "assistant",
-        content: "I'm here to help you with recruitment tasks. This feature is coming soon!"
-      }]);
-    }, 1000);
   };
 
   return (
@@ -41,9 +27,9 @@ const AIAssistant = () => {
 
         <Card className="p-6 h-[600px] flex flex-col">
           <div className="flex-1 overflow-y-auto space-y-4 mb-4">
-            {messages.map((msg) => (
+            {messages.map((msg, idx) => (
               <div
-                key={msg.id}
+                key={`${msg.role}-${idx}`}
                 className={`flex gap-3 ${
                   msg.role === "user" ? "justify-end" : "justify-start"
                 }`}
@@ -69,17 +55,28 @@ const AIAssistant = () => {
                 )}
               </div>
             ))}
+
+            {loading ? (
+              <div className="flex gap-3 justify-start">
+                <div className="p-2 bg-primary/10 rounded-full">
+                  <Bot className="h-5 w-5 text-primary" />
+                </div>
+                <div className="max-w-[70%] p-4 rounded-lg bg-muted text-foreground">
+                  <p>Typing...</p>
+                </div>
+              </div>
+            ) : null}
           </div>
           
           <div className="flex gap-2">
             <Input
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && handleSend()}
+              onKeyDown={(e) => e.key === "Enter" && handleSend()}
               placeholder="Type your message..."
               className="flex-1"
             />
-            <Button onClick={handleSend} className="bg-primary hover:bg-primary/90">
+            <Button onClick={handleSend} className="bg-primary hover:bg-primary/90" disabled={loading}>
               <Send className="h-4 w-4" />
             </Button>
           </div>

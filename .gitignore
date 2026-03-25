@@ -44,3 +44,6 @@ ai-service/__pycache__/
 ai-service/*.pyc
 ai-service/temp.py
 ai-service/*.pdf
+
+# Backend env (never commit real secrets)
+backend/.env

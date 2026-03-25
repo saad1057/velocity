@@ -8,6 +8,8 @@ const userRoutes = require('./routes/userRoutes');
 const resumeRoutes = require('./routes/resumeRoutes');
 const recruitmentRoutes = require('./routes/recruitmentRoutes');
 const assessmentRoutes = require('./routes/assessmentRoutes');
+const emailTemplateRoutes = require('./routes/emailTemplateRoutes');
+const chatbotRoutes = require('./routes/chatbotRoutes');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -52,6 +54,8 @@ app.use('/api/users', userRoutes);
 app.use('/api/resume', resumeRoutes);
 app.use('/api/recruitment', recruitmentRoutes);
 app.use('/api/assessments', assessmentRoutes);
+app.use('/api/email-templates', emailTemplateRoutes);
+app.use('/api/recruitment', chatbotRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: 'Velocity API is running' });
