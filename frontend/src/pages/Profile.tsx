@@ -61,7 +61,6 @@ const Profile = () => {
     }
   }, [authUser]);
 
-  // Dynamically updates whichever input user type in
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     setFormData((prev) => ({

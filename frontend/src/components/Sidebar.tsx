@@ -1,36 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, Briefcase, Users, Trophy, BarChart3, Mail, FileText, Bot, Settings, User, LogOut, UserPlus, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, Briefcase, Users, Trophy, BarChart3, Mail, FileText, Bot, Settings, User, LogOut } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { useEffect, useRef } from "react";
 
 const Sidebar = () => {
   const location = useLocation();
-  const { logout, isAdmin } = useAuth();
-  const sidebarRef = useRef<HTMLElement>(null);
-  
-  useEffect(() => {
-    const savedPos = sessionStorage.getItem("sidebarScroll");
-    if (savedPos && sidebarRef.current) {
-      sidebarRef.current.scrollTop = parseInt(savedPos, 10);
-    }
-    
-    const handleScroll = () => {
-      if (sidebarRef.current) {
-        sessionStorage.setItem("sidebarScroll", sidebarRef.current.scrollTop.toString());
-      }
-    };
-    
-    const currentRef = sidebarRef.current;
-    if (currentRef) {
-      currentRef.addEventListener("scroll", handleScroll);
-    }
-    
-    return () => {
-      if (currentRef) {
-        currentRef.removeEventListener("scroll", handleScroll);
-      }
-    };
-  }, []);
+  const { logout } = useAuth();
   
   const isActive = (path: string) => location.pathname === path;
   
@@ -46,11 +20,6 @@ const Sidebar = () => {
     { icon: BarChart3, label: "Analytics", path: "/analytics" },
   ];
   
-  if (isAdmin) {
-    mainMenuItems.push({ icon: UserPlus, label: "Employees", path: "/employees" });
-    mainMenuItems.push({ icon: ShieldCheck, label: "Requests", path: "/requests" });
-  }
-  
   const toolsItems = [
     { icon: Mail, label: "Email Templates", path: "/email-templates" },
     { icon: FileText, label: "Resume Parser", path: "/resume-parser" },
@@ -63,10 +32,7 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside 
-      ref={sidebarRef}
-      className="w-64 bg-card border-r border-border h-screen sticky top-0 overflow-y-auto custom-scrollbar p-6"
-    >
+    <aside className="w-64 bg-card border-r border-border min-h-screen p-6">
       <nav className="space-y-8">
         {/* Main Menu */}
         <div className="space-y-2">
