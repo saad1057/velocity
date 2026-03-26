@@ -58,11 +58,11 @@ export const Navbar = () => {
           </Link>
 
           <div className="hidden items-center gap-8 md:flex">
-            {isAuthenticated && (
+            {!isAuthenticated && (
+              <>
               <Link to="/dashboard" className={navLinkClass("/dashboard")}>
                 Dashboard
               </Link>
-            )}
             <Link to="/features" className={navLinkClass("/features")}>
               Features
             </Link>
@@ -75,6 +75,8 @@ export const Navbar = () => {
             <Link to="/contact" className={navLinkClass("/contact")}>
               Contact
             </Link>
+            </>
+            )}
           </div>
 
           <div className="hidden items-center gap-4 md:flex">
@@ -157,11 +159,11 @@ export const Navbar = () => {
         {isOpen && (
           <div className="border-t border-border py-4 md:hidden animate-fade-in">
             <div className="flex flex-col gap-4">
-              {isAuthenticated && (
+              {!isAuthenticated && (
+                <>
                 <Link to="/dashboard" className={navLinkClass("/dashboard")}>
                   Dashboard
                 </Link>
-              )}
               <Link to="/features" className={navLinkClass("/features")}>
                 Features
               </Link>
@@ -174,6 +176,8 @@ export const Navbar = () => {
               <Link to="/contact" className={navLinkClass("/contact")}>
                 Contact
               </Link>
+              </>
+              )}
               <div className="flex flex-col gap-2 pt-4">
                 {isAuthenticated ? (
                   <>

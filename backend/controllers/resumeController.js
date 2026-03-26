@@ -54,12 +54,20 @@ const parseResumePy = async (req, res) => {
       message: response.data?.message,
     });
   } catch (err) {
-    const status = err.response?.status || 500;
-    const message =
-      err.response?.data?.message ||
-      err.response?.data?.error ||
-      err.message ||
-      'Failed to parse resume';
+    const status = err?.response?.status || 500;
+  const aiBaseUrl = process.env.AI_SERVICE_URL || 'http://localhost:8001';
+  const code = err?.code;
+  const isNetworkError =
+  code === 'ECONNREFUSED' ||
+  code === 'ENOTFOUND' ||
+  code === 'ETIMEDOUT' ||
+  code === 'ECONNABORTED';
+  const message = isNetworkError
+  ? `AI resume parser service is not reachable at ${aiBaseUrl}. Start the Python service in ai-service/ on port 8001.`
+  : (err?.response?.data?.message ||
+    err?.response?.data?.error ||
+    err?.message ||
+    'Failed to parse resume');
 
     // Log detailed error server-side for troubleshooting
     console.error(
@@ -67,7 +75,9 @@ const parseResumePy = async (req, res) => {
       {
         status,
         message,
-        responseData: err.response?.data,
+        code,
+        aiBaseUrl,
+        responseData: err?.response?.data,
       }
     );
 
