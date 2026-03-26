@@ -39,11 +39,10 @@ export const Navbar = () => {
 
   const navLinkClass = (path: string) => {
     const isActive = location.pathname === path;
-    return `text-sm font-medium transition-colors ${
-      isActive
+    return `text-sm font-medium transition-colors ${isActive
         ? "text-primary"
         : "text-muted-foreground hover:text-foreground"
-    }`;
+      }`;
   };
 
   return (
@@ -58,23 +57,22 @@ export const Navbar = () => {
           </Link>
 
           <div className="hidden items-center gap-8 md:flex">
-            {isAuthenticated && (
-              <Link to="/dashboard" className={navLinkClass("/dashboard")}>
-                Dashboard
-              </Link>
+            {!isAuthenticated && (
+              <>
+                <Link to="/features" className={navLinkClass("/features")}>
+                  Features
+                </Link>
+                <Link to="/how-it-works" className={navLinkClass("/how-it-works")}>
+                  How it Works
+                </Link>
+                <Link to="/pricing" className={navLinkClass("/pricing")}>
+                  Pricing
+                </Link>
+                <Link to="/contact" className={navLinkClass("/contact")}>
+                  Contact
+                </Link>
+              </>
             )}
-            <Link to="/features" className={navLinkClass("/features")}>
-              Features
-            </Link>
-            <Link to="/how-it-works" className={navLinkClass("/how-it-works")}>
-              How it Works
-            </Link>
-            <Link to="/pricing" className={navLinkClass("/pricing")}>
-              Pricing
-            </Link>
-            <Link to="/contact" className={navLinkClass("/contact")}>
-              Contact
-            </Link>
           </div>
 
           <div className="hidden items-center gap-4 md:flex">
@@ -157,23 +155,22 @@ export const Navbar = () => {
         {isOpen && (
           <div className="border-t border-border py-4 md:hidden animate-fade-in">
             <div className="flex flex-col gap-4">
-              {isAuthenticated && (
-                <Link to="/dashboard" className={navLinkClass("/dashboard")}>
-                  Dashboard
-                </Link>
+              {!isAuthenticated && (
+                <>
+                  <Link to="/features" className={navLinkClass("/features")}>
+                    Features
+                  </Link>
+                  <Link to="/how-it-works" className={navLinkClass("/how-it-works")}>
+                    How it Works
+                  </Link>
+                  <Link to="/pricing" className={navLinkClass("/pricing")}>
+                    Pricing
+                  </Link>
+                  <Link to="/contact" className={navLinkClass("/contact")}>
+                    Contact
+                  </Link>
+                </>
               )}
-              <Link to="/features" className={navLinkClass("/features")}>
-                Features
-              </Link>
-              <Link to="/how-it-works" className={navLinkClass("/how-it-works")}>
-                How it Works
-              </Link>
-              <Link to="/pricing" className={navLinkClass("/pricing")}>
-                Pricing
-              </Link>
-              <Link to="/contact" className={navLinkClass("/contact")}>
-                Contact
-              </Link>
               <div className="flex flex-col gap-2 pt-4">
                 {isAuthenticated ? (
                   <>

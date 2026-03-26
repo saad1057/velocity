@@ -26,7 +26,7 @@ import Assessments from "./pages/Assessments";
 import Preferences from "./pages/Preferences";
 import Employees from "./pages/Employees";
 import Requests from "./pages/Requests";
-import NotFound from "./pages/NotFound";
+import NotFound from "./pages/NotFound"; // 404 handler
 
 const queryClient = new QueryClient();
 
