@@ -1,5 +1,5 @@
 # Activate virtual environment and start Flask app
-Set-Location c:\velocity-main\ai-service
+Set-Location c:\velocity\ai-service
 $venvPath = ".\.venv\Scripts\Activate.ps1"
 
 # Execute the activation script
