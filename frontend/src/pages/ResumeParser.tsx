@@ -67,6 +67,16 @@ const ResumeParser = () => {
       return;
     }
 
+    if (!position.trim()) {
+      setError("Please select a position.");
+      return;
+    }
+
+    if (!description.trim()) {
+      setError("Please paste a job description. It’s required for accurate matching.");
+      return;
+    }
+
     setLoading(true);
     try {
       const documentBase64 = await toBase64(file);
@@ -130,7 +140,7 @@ const ResumeParser = () => {
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">Description</label>
               <Textarea
-                placeholder="Paste a short job description to help the parser context (optional)"
+                placeholder="Paste the job description here (required for accurate matching)"
                 rows={4}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}

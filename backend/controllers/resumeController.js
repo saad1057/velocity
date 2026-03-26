@@ -16,6 +16,20 @@ const parseResumePy = async (req, res) => {
       });
     }
 
+    if (!position || !String(position).trim()) {
+      return res.status(400).json({
+        success: false,
+        message: 'position is required for accurate matching',
+      });
+    }
+
+    if (!description || !String(description).trim()) {
+      return res.status(400).json({
+        success: false,
+        message: 'description is required for accurate matching',
+      });
+    }
+
     const baseUrl = process.env.AI_SERVICE_URL || 'http://localhost:8001';
     const response = await axios.post(
       `${baseUrl}/parse`,
@@ -64,6 +78,65 @@ const parseResumePy = async (req, res) => {
   }
 };
 
+const cleanSkillList = (skills, max = 20) => {
+  const arr = Array.isArray(skills) ? skills : [];
+  const seen = new Set();
+  const out = [];
+  for (const raw of arr) {
+    const s = String(raw || '').trim();
+    if (!s) continue;
+    const k = s.toLowerCase();
+    if (seen.has(k)) continue;
+    seen.add(k);
+    out.push(s);
+    if (out.length >= max) break;
+  }
+  return out;
+};
+
+const callGeminiForRequiredSkills = async ({ position, description, maxSkills = 18 }) => {
+  if (!process.env.GEMINI_API_KEY) return null;
+
+  const model = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GEMINI_API_KEY}`;
+
+  const prompt = `Extract the generally required skills for the following job.
+Return ONLY valid JSON as an array of strings (no markdown, no extra text).
+Rules:
+- Skills should be short (1-3 words).
+- Prefer hard skills/tools/technologies.
+- Max ${maxSkills} items.
+
+Position: ${String(position || '').trim()}
+Job description:
+${String(description || '').trim().slice(0, 5000)}
+`;
+
+  try {
+    const response = await axios.post(
+      url,
+      {
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        generationConfig: {
+          responseMimeType: 'application/json',
+          temperature: 0.2,
+          maxOutputTokens: 220,
+        },
+      },
+      { headers: { 'Content-Type': 'application/json' }, timeout: 20000 }
+    );
+
+    const text = response?.data?.candidates?.[0]?.content?.parts?.map((p) => p?.text).filter(Boolean).join('') || '';
+    if (!text) return null;
+
+    const parsed = JSON.parse(String(text).trim());
+    if (!Array.isArray(parsed)) return null;
+    return cleanSkillList(parsed, maxSkills);
+  } catch {
+    return null;
+  }
+};
+
 const STOP_WORDS = new Set([
   'a',
   'an',
@@ -109,6 +182,24 @@ const STOP_WORDS = new Set([
   'with',
   'you',
   'your',
+  // Common job-description words that pollute keyword matching.
+  'candidate',
+  'candidates',
+  'university',
+  'bachelor',
+  'bsc',
+  'msc',
+  'ms',
+  'years',
+  'year',
+  'using',
+  'within',
+  'having',
+  'background',
+  'responsibility',
+  'responsibilities',
+  'required',
+  'requirements',
   'job',
   'role',
   'position',
@@ -195,7 +286,7 @@ const extractLikelySkillsFromJob = (jobText, maxSkills = 20) => {
   // Lightweight keyword extraction (no heavy NLP deps).
   const knownSkillPatterns = [
     /react|redux|next\.js/,
-    /node(\.js)?|express/,
+    /node\.js|node|express/,
     /python|django|flask/,
     /java|spring/,
     /c\+\+|c#|typescript/,
@@ -204,6 +295,19 @@ const extractLikelySkillsFromJob = (jobText, maxSkills = 20) => {
     /aws|gcp|azure/,
     /docker|kubernetes|k8s/,
     /terraform/,
+    // Additions commonly seen in job posts
+    /graphql/,
+    /redis/,
+    /kafka/,
+    /microservices/,
+    /tailwind|bootstrap/,
+    /vue|angular/,
+    /laravel/,
+    /php/,
+    /wordpress/,
+    /flutter/,
+    /react native/,
+    /figma/,
     /machine learning|ml\b/,
     /deep learning|dl\b/,
     /nlp|natural language processing/,
@@ -229,9 +333,77 @@ const extractLikelySkillsFromJob = (jobText, maxSkills = 20) => {
   for (const t of tokens) freq.set(t, (freq.get(t) || 0) + 1);
   const sorted = [...freq.entries()].sort((a, b) => b[1] - a[1]);
 
+  // When we have to fall back to frequent tokens, be strict so we don't
+  // add generic words like "candidate", "university", etc. (those reduce
+  // skill coverage and deflate the match score).
+  const SKILL_TOKEN_ALLOWLIST = new Set([
+    // Core stack
+    'react',
+    'redux',
+    'next.js',
+    'node',
+    'node.js',
+    'express',
+    'python',
+    'django',
+    'flask',
+    'java',
+    'spring',
+    'typescript',
+    'javascript',
+    'sql',
+    'postgres',
+    'mysql',
+    'mongodb',
+    'aws',
+    'gcp',
+    'azure',
+    'docker',
+    'kubernetes',
+    'k8s',
+    'terraform',
+    // Popular extras
+    'graphql',
+    'redis',
+    'kafka',
+    'microservices',
+    'tailwind',
+    'bootstrap',
+    'vue',
+    'angular',
+    'laravel',
+    'php',
+    'wordpress',
+    'flutter',
+    'figma',
+    'excel',
+    'tableau',
+    'power',
+    'bi',
+    // ML
+    'ml',
+    'nlp',
+    'api',
+    'rest',
+    'git',
+    'github',
+    'ci',
+    'cd',
+  ]);
+
+  const isSkillLikeToken = (tok) => {
+    const s = String(tok || '').toLowerCase().trim();
+    if (!s) return false;
+    if (SKILL_TOKEN_ALLOWLIST.has(s)) return true;
+    // Tech tokens often contain punctuation (node.js, next.js, c#, c++).
+    if (/[.#+\-]/.test(s)) return true;
+    return false;
+  };
+
   for (const [tok] of sorted) {
     if (extracted.length >= maxSkills) break;
     if (extracted.includes(tok)) continue;
+    if (!isSkillLikeToken(tok)) continue;
     extracted.push(tok);
   }
 
@@ -247,6 +419,7 @@ const extractLikelySkillsFromJob = (jobText, maxSkills = 20) => {
     .flatMap((s) => s.split(','))
     .map((s) => s.trim())
     .map((s) => s.replace(/\\\./g, '.').replace(/\\/g, ''))
+    .map((s) => s.replace(/[()]/g, '').replace(/\?/g, ''))
     .filter(Boolean)
     .slice(0, maxSkills);
 
@@ -346,7 +519,17 @@ const callGeminiForNarrativeSummary = async ({ parsed, position, description, sk
     description: description || '',
   };
 
-  const prompt = `Write an AI narrative summary (plain English, 1 paragraph) for a recruiter about the candidate.
+  const requiredSkillsText = Array.isArray(skillGap?.requiredSkills)
+    ? skillGap.requiredSkills.slice(0, 12).join(", ")
+    : "";
+
+  const prompt = `Write an AI narrative summary for a recruiter about the candidate.
+Rules:
+1) Output EXACTLY 2 lines (two separate newline-delimited lines).
+2) No bullets, no numbering, no headings.
+3) Keep each line short and precise.
+4) Explicitly mention the generally required skills for the specified role (from the role's required skills).
+
 Candidate:
 ${JSON.stringify(candidate).slice(0, 3500)}
 
@@ -357,10 +540,8 @@ Skill gap analysis:
 ${JSON.stringify(skillGap).slice(0, 1200)}
 
 Requirements:
-- Mention the candidate's strongest matching skills (based on the gap analysis).
-- Mention missing skills the recruiter should evaluate.
-- Keep it concise and recruiter-friendly.
-- Do NOT output bullet points.`;
+- Line 1: Mention the candidate's strongest matching skills (based on the gap analysis) and 1–2 supporting signals from the resume.
+- Line 2: Mention the missing skills the recruiter should evaluate, and also state the generally required skills for the role: ${requiredSkillsText || "N/A"}.`;
 
   try {
     const response = await axios.post(
@@ -392,11 +573,16 @@ Requirements:
 };
 
 const buildResumeInsights = async ({ parsed, position, description }) => {
-  const skills = Array.isArray(parsed?.skills) ? parsed.skills : [];
+  const skills = Array.isArray(parsed?.skills)
+    ? parsed.skills.map((s) => String(s)).filter(Boolean)
+    : [];
   const resumeText = buildResumeTextForScoring(parsed);
   const jobText = [position || '', description || ''].join('\n').trim();
 
-  const requiredSkills = extractLikelySkillsFromJob(jobText);
+  const geminiRequiredSkills = await callGeminiForRequiredSkills({ position, description });
+  const requiredSkills = (geminiRequiredSkills && geminiRequiredSkills.length)
+    ? geminiRequiredSkills
+    : extractLikelySkillsFromJob(jobText);
 
   const presentSkills = [];
   const missingSkills = [];
@@ -407,8 +593,22 @@ const buildResumeInsights = async ({ parsed, position, description }) => {
     else missingSkills.push(req);
   }
 
-  const cosine = computeTfIdfCosineSimilarity(jobText, resumeText);
-  const jobMatchScorePercent = Math.round(cosine * 100);
+  const resumeSkillsText = skills.join(' ').trim();
+  const requiredSkillsText = requiredSkills.join(' ').trim();
+  const cosineSkills =
+    requiredSkillsText && resumeSkillsText
+      ? computeTfIdfCosineSimilarity(requiredSkillsText, resumeSkillsText)
+      : 0;
+  const cosineFull = computeTfIdfCosineSimilarity(jobText, resumeText);
+
+  let jobMatchScorePercent = 0;
+  if (requiredSkills.length) {
+    const skillCoverage = presentSkills.length / requiredSkills.length; // 0..1
+    const combined = 0.65 * skillCoverage + 0.35 * cosineSkills; // 0..1
+    jobMatchScorePercent = Math.round(Math.max(0, Math.min(1, combined)) * 100);
+  } else {
+    jobMatchScorePercent = Math.round(cosineFull * 100);
+  }
 
   const profileCard = {
     name: parsed?.name || null,
