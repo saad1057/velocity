@@ -1,5 +1,9 @@
 flask
 unstructured
+pdfminer.six
+python-docx
+pi-heif
+pillow
 pypdf
 python-docx
 
