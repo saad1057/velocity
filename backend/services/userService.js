@@ -2,47 +2,6 @@ const User = require('../model/user');
 const { hashPassword } = require('../utils/password');
 
 /**
- * Create a new user (admin only)
- * @param {Object} userData - User data
- * @returns {Promise<Object>} - Created user (without password)
- */
-const createUser = async (userData) => {
-  const { firstname, lastname, companyname, email, password, role } = userData;
-
-  // Check if user already exists
-  const existingUser = await User.findOne({ email });
-  if (existingUser) {
-    throw new Error('User with this email already exists');
-  }
-
-  // Hash the password if provided
-  let hashedPassword = null;
-  if (password) {
-    hashedPassword = await hashPassword(password);
-  }
-
-  // Create user object
-  const userObject = {
-    firstname,
-    lastname,
-    companyname,
-    email,
-    role: role || 'recruiter'
-  };
-
-  if (hashedPassword) {
-    userObject.password = hashedPassword;
-  }
-
-  const user = await User.create(userObject);
-
-  // Return user without password
-  const userObj = user.toObject();
-  delete userObj.password;
-  return userObj;
-};
-
-/**
  * Get all users
  * @returns {Promise<Array>} - Array of users (without passwords)
  */
@@ -127,11 +86,7 @@ const getCurrentUser = async (userId) => {
 };
 
 module.exports = {
-  createUser,
-  getAllUsers,
-  getUserById,
   updateUser,
-  deleteUser,
   getCurrentUser
 };
 

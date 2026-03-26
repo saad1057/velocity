@@ -9,7 +9,10 @@ const resumeRoutes = require('./routes/resumeRoutes');
 const recruitmentRoutes = require('./routes/recruitmentRoutes');
 const assessmentRoutes = require('./routes/assessmentRoutes');
 const emailTemplateRoutes = require('./routes/emailTemplateRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 const chatbotRoutes = require('./routes/chatbotRoutes');
+const { trackActivity } = require('./middleware/activityMiddleware');
+const { authenticate } = require('./middleware/auth');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -39,6 +42,7 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: '25mb' }));
 app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 app.use(cookieParser());
+app.use(trackActivity);
 
 connectToMongoDb(process.env.MONGODB_URI || "mongodb://localhost:27017/Velocity")
   .then(() => {
@@ -55,7 +59,10 @@ app.use('/api/resume', resumeRoutes);
 app.use('/api/recruitment', recruitmentRoutes);
 app.use('/api/assessments', assessmentRoutes);
 app.use('/api/email-templates', emailTemplateRoutes);
-app.use('/api/recruitment', chatbotRoutes);
+app.use('/api/recruitment-chat', chatbotRoutes);
+
+// Admin Routes
+app.use('/api/admin', adminRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: 'Velocity API is running' });

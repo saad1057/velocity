@@ -25,6 +25,10 @@ import AIAssistant from "./pages/AIAssistant";
 import Assessments from "./pages/Assessments";
 import Preferences from "./pages/Preferences";
 import CandidateExam from "./pages/CandidateExam";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import RecruiterManagement from "./pages/admin/RecruiterManagement";
+import ActivityLogs from "./pages/admin/ActivityLogs";
+import AdminRoute from "./components/AdminRoute";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -48,12 +52,7 @@ const App = () => (
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/exam/:token" element={<CandidateExam />} />
             
-            {/* For admin-only routes, use: */}
-            {/* <ProtectedRoute adminOnly={true}>
-              <AdminOnlyComponent />
-            </ProtectedRoute> */}
-            
-            {/* Protected routes - accessible to all authenticated users (recruiters and admins) */}
+            {/* Protected routes - accessible to all authenticated users */}
             <Route 
               path="/dashboard" 
               element={
@@ -134,6 +133,14 @@ const App = () => (
                 </ProtectedRoute>
               } 
             />
+
+            {/* Admin specific routes */}
+            <Route element={<AdminRoute />}>
+              <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+              <Route path="/admin/dashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+              <Route path="/admin/recruiters" element={<ProtectedRoute><RecruiterManagement /></ProtectedRoute>} />
+              <Route path="/admin/activity" element={<ProtectedRoute><ActivityLogs /></ProtectedRoute>} />
+            </Route>
             
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -18,7 +18,7 @@ const signup = async (userData) => {
     companyname,
     email,
     password: hashedPassword,
-    role: 'recruiter'
+    role: 'user'
   });
 
   const userObject = user.toObject();
