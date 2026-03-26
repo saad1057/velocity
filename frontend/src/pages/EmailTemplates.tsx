@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, Mail, Edit, Trash2 } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Plus, Mail, Edit, Trash2, Copy } from "lucide-react";
 import api from "@/lib/api";
 
 type EmailTemplate = {
@@ -13,9 +14,122 @@ type EmailTemplate = {
   name: string;
   subject: string;
   category: string;
+  body?: string;
 };
 
-const CATEGORY_OPTIONS = ["Interview", "Rejection", "Offer", "Follow-up"];
+const CATEGORY_OPTIONS = ["Interview", "Rejection", "Offer", "Acceptance", "Follow-up"];
+
+const buildFormalTemplateBody = (category: string, subject: string) => {
+  const safeSubject = subject.trim() || "this opportunity";
+  const lowerCategory = category.toLowerCase();
+
+  if (lowerCategory.includes("offer")) {
+    return `Dear [Candidate Name],
+
+I hope you are doing well.
+
+Following our recent discussions, I am pleased to extend an offer for the [Job Title] position at [Company Name]. Please find the key details of this offer attached/included for your review.
+
+Kindly review the offer and let us know if you have any questions. We would appreciate your response by [Response Date].
+
+We are excited about the possibility of you joining our team.
+
+Sincerely,
+[Your Name]
+[Your Role]
+[Company Name]`;
+  }
+
+  if (lowerCategory.includes("rejection")) {
+    return `Dear [Candidate Name],
+
+Thank you for your interest in the [Job Title] position at [Company Name], and for taking the time to participate in our process.
+
+After careful consideration, we have decided to move forward with another candidate whose profile is currently a closer fit for this role.
+
+We appreciate your time and effort, and we encourage you to apply for future opportunities that align with your experience.
+
+We wish you every success in your job search.
+
+Sincerely,
+[Your Name]
+[Your Role]
+[Company Name]`;
+  }
+
+  if (lowerCategory.includes("interview")) {
+    return `Dear [Candidate Name],
+
+Thank you for your application for the [Job Title] role at [Company Name].
+
+We would like to invite you to an interview to discuss your background and experience in more detail.
+
+Please let us know your availability for the following time slots:
+- [Option 1]
+- [Option 2]
+- [Option 3]
+
+If these options are not suitable, feel free to suggest an alternative.
+
+We look forward to speaking with you.
+
+Sincerely,
+[Your Name]
+[Your Role]
+[Company Name]`;
+  }
+
+  if (lowerCategory.includes("accept")) {
+    return `Dear [Hiring Manager Name],
+
+I hope you are doing well.
+
+I am writing to formally accept the offer for the [Job Title] position at [Company Name].
+
+I confirm my intent to join the company and I look forward to contributing to the team.
+
+Please let me know the next steps required to complete the onboarding process. I will be ready to begin on [Start Date] (or as otherwise confirmed).
+
+Thank you once again for this opportunity.
+
+Sincerely,
+[Your Name]
+[Your Role]
+[Company Name]`;
+  }
+
+  if (lowerCategory.includes("follow")) {
+    return `Dear [Candidate Name],
+
+I hope you are doing well.
+
+I am following up regarding the [Job Title] application and the next steps in the process.
+
+If there is any additional information you need from me, I would be happy to provide it.
+
+Thank you for your time and consideration. I look forward to your update.
+
+Sincerely,
+[Your Name]
+[Your Role]
+[Company Name]`;
+  }
+
+  return `Dear [Candidate Name],
+
+I hope you are doing well.
+
+I am writing regarding ${safeSubject}. We appreciate your continued interest and wanted to share an update with you.
+
+Please let us know if you have any questions or require any additional information.
+
+Thank you for your time.
+
+Sincerely,
+[Your Name]
+[Your Role]
+[Company Name]`;
+};
 
 const EmailTemplates = () => {
   const [templates, setTemplates] = useState<EmailTemplate[]>([]);
@@ -26,7 +140,12 @@ const EmailTemplates = () => {
   const [editOpen, setEditOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
 
-  const [form, setForm] = useState({ name: "", subject: "", category: CATEGORY_OPTIONS[0] });
+  const [form, setForm] = useState({
+    name: "",
+    subject: "",
+    category: CATEGORY_OPTIONS[0],
+    body: buildFormalTemplateBody(CATEGORY_OPTIONS[0], ""),
+  });
   const [formError, setFormError] = useState("");
 
   const refresh = async () => {
@@ -47,7 +166,12 @@ const EmailTemplates = () => {
   }, []);
 
   const resetForm = () => {
-    setForm({ name: "", subject: "", category: CATEGORY_OPTIONS[0] });
+    setForm({
+      name: "",
+      subject: "",
+      category: CATEGORY_OPTIONS[0],
+      body: buildFormalTemplateBody(CATEGORY_OPTIONS[0], ""),
+    });
     setFormError("");
   };
 
@@ -58,7 +182,12 @@ const EmailTemplates = () => {
 
   const openEdit = (tpl: EmailTemplate) => {
     setEditingId(tpl._id);
-    setForm({ name: tpl.name, subject: tpl.subject, category: tpl.category });
+    setForm({
+      name: tpl.name,
+      subject: tpl.subject,
+      category: tpl.category,
+      body: tpl.body || buildFormalTemplateBody(tpl.category, tpl.subject),
+    });
     setFormError("");
     setEditOpen(true);
   };
@@ -67,8 +196,8 @@ const EmailTemplates = () => {
     e.preventDefault();
     setFormError("");
 
-    if (!form.name.trim() || !form.subject.trim() || !form.category.trim()) {
-      setFormError("Name, subject, and category are required.");
+    if (!form.name.trim() || !form.subject.trim() || !form.category.trim() || !form.body.trim()) {
+      setFormError("Name, subject, category, and email body are required.");
       return;
     }
 
@@ -89,8 +218,8 @@ const EmailTemplates = () => {
     if (!editingId) return;
     setFormError("");
 
-    if (!form.name.trim() || !form.subject.trim() || !form.category.trim()) {
-      setFormError("Name, subject, and category are required.");
+    if (!form.name.trim() || !form.subject.trim() || !form.category.trim() || !form.body.trim()) {
+      setFormError("Name, subject, category, and email body are required.");
       return;
     }
 
@@ -121,6 +250,22 @@ const EmailTemplates = () => {
   };
 
   const cards = useMemo(() => templates, [templates]);
+
+  const handleGenerateFormalDraft = () => {
+    setForm((p) => ({ ...p, body: buildFormalTemplateBody(p.category, p.subject) }));
+  };
+
+  const copyTemplate = async (tpl: EmailTemplate) => {
+    const templateBody = tpl.body || buildFormalTemplateBody(tpl.category, tpl.subject);
+    const textToCopy = `Subject: ${tpl.subject}\n\n${templateBody}`;
+
+    try {
+      await navigator.clipboard.writeText(textToCopy);
+      window.alert("Template copied to clipboard.");
+    } catch {
+      window.alert("Failed to copy template. Please copy manually.");
+    }
+  };
 
   return (
     <DashboardLayout>
@@ -153,6 +298,9 @@ const EmailTemplates = () => {
                     <Mail className="h-6 w-6 text-primary" />
                   </div>
                   <div className="flex gap-2">
+                    <Button variant="ghost" size="icon" onClick={() => copyTemplate(template)} title="Copy template">
+                      <Copy className="h-4 w-4" />
+                    </Button>
                     <Button variant="ghost" size="icon" onClick={() => openEdit(template)}>
                       <Edit className="h-4 w-4" />
                     </Button>
@@ -163,6 +311,9 @@ const EmailTemplates = () => {
                 </div>
                 <h3 className="text-xl font-semibold text-foreground mb-2">{template.name}</h3>
                 <p className="text-sm text-muted-foreground mb-3">{template.subject}</p>
+                <p className="text-sm text-foreground/90 mb-3 whitespace-pre-line line-clamp-4">
+                  {template.body || buildFormalTemplateBody(template.category, template.subject)}
+                </p>
                 <span className="inline-block px-2 py-1 text-xs font-medium bg-muted text-muted-foreground rounded">
                   {template.category}
                 </span>
@@ -171,12 +322,11 @@ const EmailTemplates = () => {
         </div>
       </div>
 
-      {/* Create dialog */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Create Template</DialogTitle>
-            <DialogDescription>Define the template name, subject and category.</DialogDescription>
+            <DialogDescription>Define the template name, subject, category, and full formal body.</DialogDescription>
           </DialogHeader>
 
           <form onSubmit={submitCreate} className="space-y-4">
@@ -189,7 +339,14 @@ const EmailTemplates = () => {
               <Input
                 id="tplSubject"
                 value={form.subject}
-                onChange={(e) => setForm((p) => ({ ...p, subject: e.target.value }))}
+                onChange={(e) => {
+                  const nextSubject = e.target.value;
+                  setForm((p) => ({
+                    ...p,
+                    subject: nextSubject,
+                    body: buildFormalTemplateBody(p.category, nextSubject),
+                  }));
+                }}
               />
             </div>
             <div className="space-y-2">
@@ -198,7 +355,14 @@ const EmailTemplates = () => {
                 id="tplCategory"
                 className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                 value={form.category}
-                onChange={(e) => setForm((p) => ({ ...p, category: e.target.value }))}
+                onChange={(e) => {
+                  const nextCategory = e.target.value;
+                  setForm((p) => ({
+                    ...p,
+                    category: nextCategory,
+                    body: buildFormalTemplateBody(nextCategory, p.subject),
+                  }));
+                }}
               >
                 {CATEGORY_OPTIONS.map((c) => (
                   <option key={c} value={c}>
@@ -206,6 +370,21 @@ const EmailTemplates = () => {
                   </option>
                 ))}
               </select>
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="tplBody">Formal Email Body</Label>
+                <Button type="button" variant="outline" size="sm" onClick={handleGenerateFormalDraft}>
+                  Generate Formal Draft
+                </Button>
+              </div>
+              <Textarea
+                id="tplBody"
+                value={form.body}
+                rows={10}
+                onChange={(e) => setForm((p) => ({ ...p, body: e.target.value }))}
+                placeholder="Write the full formal email template..."
+              />
             </div>
 
             {formError ? <p className="text-sm text-red-500">{formError}</p> : null}
@@ -220,12 +399,11 @@ const EmailTemplates = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Edit dialog */}
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Edit Template</DialogTitle>
-            <DialogDescription>Update the template details.</DialogDescription>
+            <DialogDescription>Update the template details and full formal body.</DialogDescription>
           </DialogHeader>
 
           <form onSubmit={submitEdit} className="space-y-4">
@@ -238,7 +416,14 @@ const EmailTemplates = () => {
               <Input
                 id="editTplSubject"
                 value={form.subject}
-                onChange={(e) => setForm((p) => ({ ...p, subject: e.target.value }))}
+                onChange={(e) => {
+                  const nextSubject = e.target.value;
+                  setForm((p) => ({
+                    ...p,
+                    subject: nextSubject,
+                    body: buildFormalTemplateBody(p.category, nextSubject),
+                  }));
+                }}
               />
             </div>
             <div className="space-y-2">
@@ -247,7 +432,14 @@ const EmailTemplates = () => {
                 id="editTplCategory"
                 className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                 value={form.category}
-                onChange={(e) => setForm((p) => ({ ...p, category: e.target.value }))}
+                onChange={(e) => {
+                  const nextCategory = e.target.value;
+                  setForm((p) => ({
+                    ...p,
+                    category: nextCategory,
+                    body: buildFormalTemplateBody(nextCategory, p.subject),
+                  }));
+                }}
               >
                 {CATEGORY_OPTIONS.map((c) => (
                   <option key={c} value={c}>
@@ -255,6 +447,21 @@ const EmailTemplates = () => {
                   </option>
                 ))}
               </select>
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="editTplBody">Formal Email Body</Label>
+                <Button type="button" variant="outline" size="sm" onClick={handleGenerateFormalDraft}>
+                  Generate Formal Draft
+                </Button>
+              </div>
+              <Textarea
+                id="editTplBody"
+                value={form.body}
+                rows={10}
+                onChange={(e) => setForm((p) => ({ ...p, body: e.target.value }))}
+                placeholder="Write the full formal email template..."
+              />
             </div>
 
             {formError ? <p className="text-sm text-red-500">{formError}</p> : null}

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Progress } from "@/components/ui/progress";
 import { UploadCloud, FileText, Loader2, Download } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
@@ -42,6 +43,8 @@ const ResumeParser = () => {
     link.remove();
     URL.revokeObjectURL(url);
   };
+
+  const insights = (result as any)?.insights || null;
 
   const toBase64 = (file: File) =>
     new Promise<string>((resolve, reject) => {
@@ -180,6 +183,182 @@ const ResumeParser = () => {
 
         {result && (
           <Card className="p-4 bg-card border-border">
+            {insights ? (
+              <div className="space-y-6 mb-4">
+                <div className="grid gap-6 lg:grid-cols-2">
+                  <Card className="p-4 bg-background border-border">
+                    <div className="flex items-center gap-2 mb-3">
+                      <FileText className="h-5 w-5 text-primary" />
+                      <h3 className="text-lg font-semibold text-foreground">Profile Card</h3>
+                    </div>
+
+                    <p className="text-sm font-semibold text-foreground">
+                      {insights.profileCard?.name || "Candidate"}
+                    </p>
+
+                    {insights.profileCard?.contact ? (
+                      <div className="text-sm text-muted-foreground space-y-1 mt-2">
+                        {insights.profileCard.contact.email ? <div>Email: {insights.profileCard.contact.email}</div> : null}
+                        {insights.profileCard.contact.phone ? <div>Phone: {insights.profileCard.contact.phone}</div> : null}
+                        {insights.profileCard.contact.linkedin ? (
+                          <div>
+                            LinkedIn:{" "}
+                            <a
+                              className="underline"
+                              href={`https://${insights.profileCard.contact.linkedin}`}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              {insights.profileCard.contact.linkedin}
+                            </a>
+                          </div>
+                        ) : null}
+                        {insights.profileCard.contact.github ? (
+                          <div>
+                            GitHub:{" "}
+                            <a
+                              className="underline"
+                              href={`https://${insights.profileCard.contact.github}`}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              {insights.profileCard.contact.github}
+                            </a>
+                          </div>
+                        ) : null}
+                      </div>
+                    ) : null}
+
+                    <div className="mt-4">
+                      <div className="text-sm font-semibold text-foreground mb-2">Top Skills</div>
+                      <div className="flex flex-wrap gap-2">
+                        {(insights.profileCard?.topSkills || []).slice(0, 10).map((s: string, idx: number) => (
+                          <span key={`${s}-${idx}`} className="text-xs px-2 py-1 rounded bg-muted text-muted-foreground">
+                            {s}
+                          </span>
+                        ))}
+                        {!insights.profileCard?.topSkills?.length ? (
+                          <span className="text-sm text-muted-foreground">No skills extracted.</span>
+                        ) : null}
+                      </div>
+                    </div>
+
+                    <div className="mt-4">
+                      <div className="text-sm font-semibold text-foreground mb-2">Education</div>
+                      <div className="space-y-2">
+                        {(insights.profileCard?.education || []).slice(0, 2).map((e: any, idx: number) => (
+                          <div key={idx} className="text-sm text-muted-foreground">
+                            <div className="font-medium text-foreground">{e.degree || "Education"}</div>
+                            <div>{e.institution || ""} {e.years ? `(${e.years})` : ""}</div>
+                          </div>
+                        ))}
+                        {!insights.profileCard?.education?.length ? (
+                          <div className="text-sm text-muted-foreground">No education found.</div>
+                        ) : null}
+                      </div>
+                    </div>
+
+                    <div className="mt-4">
+                      <div className="text-sm font-semibold text-foreground mb-2">Experience</div>
+                      <div className="space-y-2">
+                        {(insights.profileCard?.experience || []).slice(0, 2).map((x: any, idx: number) => (
+                          <div key={idx} className="text-sm text-muted-foreground">
+                            <div className="font-medium text-foreground">
+                              {x.role || "Role"} {x.company ? `- ${x.company}` : ""}
+                            </div>
+                            <div>{x.duration ? x.duration : ""} {x.location ? `• ${x.location}` : ""}</div>
+                          </div>
+                        ))}
+                        {!insights.profileCard?.experience?.length ? (
+                          <div className="text-sm text-muted-foreground">No experience found.</div>
+                        ) : null}
+                      </div>
+                    </div>
+                  </Card>
+
+                  <Card className="p-4 bg-background border-border">
+                    <div className="flex items-center gap-2 mb-3">
+                      <FileText className="h-5 w-5 text-primary" />
+                      <h3 className="text-lg font-semibold text-foreground">Job Match Score</h3>
+                    </div>
+
+                    <div className="text-sm text-muted-foreground mb-3">
+                      {insights.jobMatchScore?.label ? insights.jobMatchScore.label : "Match score"}
+                    </div>
+
+                    <div className="text-3xl font-bold text-foreground">
+                      {typeof insights.jobMatchScore?.score === "number" ? `${insights.jobMatchScore.score}%` : "--"}
+                    </div>
+
+                    <div className="mt-2">
+                      <Progress value={insights.jobMatchScore?.score || 0} />
+                    </div>
+
+                    <div className="text-xs text-muted-foreground mt-2">
+                      Estimated from resume text vs your provided job description.
+                    </div>
+                  </Card>
+                </div>
+
+                <Card className="p-4 bg-background border-border">
+                  <div className="flex items-center justify-between gap-3 mb-3">
+                    <h3 className="text-lg font-semibold text-foreground">Skill Gap Analysis</h3>
+                    <div className="text-sm text-muted-foreground">
+                      Required: {insights.skillGapAnalysis?.requiredSkills?.length || 0} • Missing:{" "}
+                      {insights.skillGapAnalysis?.missingSkills?.length || 0}
+                    </div>
+                  </div>
+
+                  <div className="grid gap-4 lg:grid-cols-2">
+                    <div>
+                      <div className="text-sm font-semibold text-foreground mb-2">Present Skills</div>
+                      <div className="flex flex-wrap gap-2">
+                        {(insights.skillGapAnalysis?.presentSkills || []).slice(0, 12).map((s: string, idx: number) => (
+                          <span key={`${s}-${idx}`} className="text-xs px-2 py-1 rounded bg-primary/10 text-primary">
+                            {s}
+                          </span>
+                        ))}
+                        {!insights.skillGapAnalysis?.presentSkills?.length ? (
+                          <span className="text-sm text-muted-foreground">None detected.</span>
+                        ) : null}
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="text-sm font-semibold text-foreground mb-2">Missing Skills</div>
+                      <div className="flex flex-wrap gap-2">
+                        {(insights.skillGapAnalysis?.missingSkills || []).slice(0, 12).map((s: string, idx: number) => (
+                          <span key={`${s}-${idx}`} className="text-xs px-2 py-1 rounded bg-destructive/10 text-destructive">
+                            {s}
+                          </span>
+                        ))}
+                        {!insights.skillGapAnalysis?.missingSkills?.length ? (
+                          <span className="text-sm text-muted-foreground">None detected.</span>
+                        ) : null}
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+
+                <Card className="p-4 bg-background border-border">
+                  <div className="flex items-center gap-2 mb-2">
+                    <FileText className="h-5 w-5 text-primary" />
+                    <h3 className="text-lg font-semibold text-foreground">AI Narrative Summary</h3>
+                  </div>
+
+                  {insights.aiNarrativeSummary ? (
+                    <p className="text-sm text-muted-foreground whitespace-pre-line">
+                      {insights.aiNarrativeSummary}
+                    </p>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      AI summary could not be generated for this resume. The rest of the insights are still available.
+                    </p>
+                  )}
+                </Card>
+              </div>
+            ) : null}
+
             <div className="flex items-center gap-2 mb-3">
               <FileText className="h-5 w-5 text-primary" />
               <h3 className="text-lg font-semibold text-foreground">Parsed Result</h3>

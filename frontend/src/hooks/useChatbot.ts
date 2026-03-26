@@ -31,7 +31,12 @@ export function useChatbot() {
         ...prev,
         {
           role: "assistant",
-          content: err?.response?.data?.error || "Failed to get response from the chatbot.",
+          content:
+            err?.response?.data?.details
+              ? `${err?.response?.data?.error || "Failed to get response"}: ${err.response.data.details}`
+              : err?.response?.data?.error ||
+                err?.message ||
+                "Failed to get response from the chatbot.",
         },
       ]);
     } finally {
