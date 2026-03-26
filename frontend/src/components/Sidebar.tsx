@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { LayoutDashboard, Briefcase, Users, Trophy, BarChart3, Mail, FileText, Bot, Settings, User, LogOut } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
@@ -5,7 +6,6 @@ import { useAuth } from "@/context/AuthContext";
 const Sidebar = () => {
   const location = useLocation();
   const { logout } = useAuth();
-<<<<<<< HEAD
   const sidebarRef = useRef<HTMLElement>(null);
   
   useEffect(() => {
@@ -31,8 +31,6 @@ const Sidebar = () => {
       }
     };
   }, []);
-=======
->>>>>>> 403a6001fe08692ce4f4ad0dc2dd5212ec8a4d79
   
   const isActive = (path: string) => location.pathname === path;
   
@@ -48,11 +46,6 @@ const Sidebar = () => {
     { icon: BarChart3, label: "Analytics", path: "/analytics" },
   ];
   
-<<<<<<< HEAD
-
-  
-=======
->>>>>>> 403a6001fe08692ce4f4ad0dc2dd5212ec8a4d79
   const toolsItems = [
     { icon: Mail, label: "Email Templates", path: "/email-templates" },
     { icon: FileText, label: "Resume Parser", path: "/resume-parser" },
