@@ -1,11 +1,11 @@
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, Briefcase, Users, Trophy, BarChart3, Mail, FileText, Bot, Settings, User, LogOut, UserPlus, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, Briefcase, Users, Trophy, BarChart3, Mail, FileText, Bot, Settings, User, LogOut } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useEffect, useRef } from "react";
 
 const Sidebar = () => {
   const location = useLocation();
-  const { logout, isAdmin } = useAuth();
+  const { logout } = useAuth();
   const sidebarRef = useRef<HTMLElement>(null);
   
   useEffect(() => {
@@ -46,10 +46,7 @@ const Sidebar = () => {
     { icon: BarChart3, label: "Analytics", path: "/analytics" },
   ];
   
-  if (isAdmin) {
-    mainMenuItems.push({ icon: UserPlus, label: "Employees", path: "/employees" });
-    mainMenuItems.push({ icon: ShieldCheck, label: "Requests", path: "/requests" });
-  }
+
   
   const toolsItems = [
     { icon: Mail, label: "Email Templates", path: "/email-templates" },

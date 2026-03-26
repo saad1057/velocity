@@ -8,9 +8,6 @@ interface AuthContextType {
   token: string | null;
   loading: boolean;
   isAuthenticated: boolean;
-  isAdmin: boolean;
-  isRecruiter: boolean;
-  isEmployee: boolean;
   login: (data: SigninData) => Promise<void>;
   register: (data: SignupData) => Promise<void>;
   logout: () => Promise<void>;
@@ -154,9 +151,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     token,
     loading,
     isAuthenticated: !!user && !!token,
-    isAdmin: user?.role === 'admin',
-    isRecruiter: user?.role === 'recruiter' || user?.role === 'admin',
-    isEmployee: user?.role === 'employee',
     login,
     register,
     logout,
