@@ -22,24 +22,8 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['admin', 'employee', 'recruiter'],
+      enum: ['admin', 'recruiter'],
       default: 'recruiter',
-    },
-    status: {
-      type: String,
-      enum: ['pending', 'approved', 'rejected'],
-      default: 'approved',
-    },
-    companyCode: {
-      type: String,
-    },
-    adminId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'user',
-    },
-    isApproved: {
-      type: Boolean,
-      default: false,
     },
     picture: {
       data: { type: Buffer },

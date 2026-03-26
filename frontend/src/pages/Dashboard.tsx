@@ -33,15 +33,6 @@ const Dashboard = () => {
           <p className="text-muted-foreground">
             Welcome back, {getUserDisplayName()}! Here's what's happening with your recruitment.
           </p>
-          {user?.role === 'admin' && user?.companyCode && (
-            <div className="mt-4 p-4 bg-primary/10 border border-primary/20 rounded-lg flex items-center gap-3">
-              <Sparkles className="h-5 w-5 text-primary" />
-              <div>
-                <p className="font-semibold text-primary">Your Company Code: <span className="font-mono bg-background px-2 py-1 rounded ml-1">{user.companyCode}</span></p>
-                <p className="text-sm text-primary/80">Share this code with your employees so they can join your workspace.</p>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Action Buttons */}

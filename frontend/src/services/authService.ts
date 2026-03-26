@@ -6,8 +6,6 @@ export interface SignupData {
   companyname?: string;
   email: string;
   password: string;
-  role?: 'admin' | 'employee';
-  companyCode?: string;
 }
 
 export interface SigninData {
@@ -21,9 +19,7 @@ export interface User {
   lastname?: string;
   companyname?: string;
   email: string;
-  role: 'admin' | 'recruiter' | 'employee';
-  companyCode?: string;
-  status?: 'pending' | 'approved' | 'rejected';
+  role: 'admin' | 'recruiter';
   picture?: {
     data: string | Buffer;
     contentType: string;
