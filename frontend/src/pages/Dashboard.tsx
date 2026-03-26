@@ -33,7 +33,6 @@ const Dashboard = () => {
           <p className="text-muted-foreground">
             Welcome back, {getUserDisplayName()}! Here's what's happening with your recruitment.
           </p>
-
         </div>
 
         {/* Action Buttons */}

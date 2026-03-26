@@ -1,11 +1,11 @@
 import { Link, useLocation } from "react-router-dom";
 import { LayoutDashboard, Briefcase, Users, Trophy, BarChart3, Mail, FileText, Bot, Settings, User, LogOut } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { useEffect, useRef } from "react";
 
 const Sidebar = () => {
   const location = useLocation();
   const { logout } = useAuth();
+<<<<<<< HEAD
   const sidebarRef = useRef<HTMLElement>(null);
   
   useEffect(() => {
@@ -31,6 +31,8 @@ const Sidebar = () => {
       }
     };
   }, []);
+=======
+>>>>>>> 403a6001fe08692ce4f4ad0dc2dd5212ec8a4d79
   
   const isActive = (path: string) => location.pathname === path;
   
@@ -46,8 +48,11 @@ const Sidebar = () => {
     { icon: BarChart3, label: "Analytics", path: "/analytics" },
   ];
   
+<<<<<<< HEAD
 
   
+=======
+>>>>>>> 403a6001fe08692ce4f4ad0dc2dd5212ec8a4d79
   const toolsItems = [
     { icon: Mail, label: "Email Templates", path: "/email-templates" },
     { icon: FileText, label: "Resume Parser", path: "/resume-parser" },
@@ -60,10 +65,7 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside 
-      ref={sidebarRef}
-      className="w-64 bg-card border-r border-border h-screen sticky top-0 overflow-y-auto custom-scrollbar p-6"
-    >
+    <aside className="w-64 bg-card border-r border-border min-h-screen p-6">
       <nav className="space-y-8">
         {/* Main Menu */}
         <div className="space-y-2">

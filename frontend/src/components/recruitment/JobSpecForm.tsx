@@ -3,7 +3,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import api from "@/lib/api";
-import CandidateList from "@/components/recruitment/CandidateList";
+import AssessmentModal, { AssessmentData } from "@/components/recruitment/AssessmentModal";
+import { useToast } from "@/hooks/use-toast";
 
 const seniorityOptions = [
   "intern",
@@ -48,7 +49,21 @@ interface JobSpecFormProps {
   onSubmit?: (payload: unknown) => void;
 }
 
+interface AssessmentRequestPayload {
+  jobTitle: string;
+  location: string;
+  seniority: string[];
+  industry: string;
+  companySize: string[];
+  skills: string;
+  keywords: string;
+  minExperience: number | null;
+  education: string;
+  resultsPerPage: number;
+}
+
 const JobSpecForm = ({ onSubmit }: JobSpecFormProps) => {
+  const { toast } = useToast();
   const [jobTitle, setJobTitle] = useState("");
   const [location, setLocation] = useState("");
   const [seniority, setSeniority] = useState<string[]>([]);
@@ -61,9 +76,12 @@ const JobSpecForm = ({ onSubmit }: JobSpecFormProps) => {
   const [emailRequired, setEmailRequired] = useState(false);
   const [perPage, setPerPage] = useState(25);
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [apiError, setApiError] = useState("");
-  const [candidates, setCandidates] = useState<any[]>([]);
+  const [submittingForm, setSubmittingForm] = useState(false);
+  const [jobSpecData, setJobSpecData] = useState<AssessmentRequestPayload | null>(null);
+  const [assessment, setAssessment] = useState<AssessmentData | null>(null);
+  const [assessmentOpen, setAssessmentOpen] = useState(false);
+  const [assessmentLoading, setAssessmentLoading] = useState(false);
+  const [assessmentError, setAssessmentError] = useState("");
 
   const toggleSelection = (
     value: string,
@@ -75,6 +93,28 @@ const JobSpecForm = ({ onSubmit }: JobSpecFormProps) => {
         ? selected.filter((item) => item !== value)
         : [...selected, value],
     );
+  };
+
+  const generateAssessmentFromPayload = async (payload: AssessmentRequestPayload) => {
+    try {
+      setAssessmentOpen(true);
+      setAssessmentLoading(true);
+      setAssessmentError("");
+      const response = await api.post("/assessments/generate", payload);
+      const generatedAssessment = response?.data?.data;
+
+      setAssessment(generatedAssessment || null);
+    } catch (err: any) {
+      const message = err?.response?.data?.message || "Failed to generate assessment.";
+      setAssessment(null);
+      setAssessmentError(message);
+      toast({
+        title: "Assessment generation failed",
+        description: message,
+      });
+    } finally {
+      setAssessmentLoading(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -101,18 +141,95 @@ const JobSpecForm = ({ onSubmit }: JobSpecFormProps) => {
       },
     };
 
+    const assessmentPayload: AssessmentRequestPayload = {
+      jobTitle: jobTitle.trim(),
+      location: location.trim(),
+      seniority,
+      industry,
+      companySize,
+      skills: skills.trim(),
+      keywords: keywords.trim(),
+      minExperience: minExperienceYears === "" ? null : Number(minExperienceYears),
+      education: education.trim(),
+      resultsPerPage: Math.min(100, Math.max(1, Number(perPage) || 25)),
+    };
+
     onSubmit?.(payload);
+    setJobSpecData(assessmentPayload);
+    setAssessment(null);
+    setAssessmentError("");
 
     try {
-      setLoading(true);
-      setApiError("");
-      const response = await api.post("/recruitment/search", payload);
-      setCandidates(response?.data?.data || []);
-    } catch (err: any) {
-      setCandidates([]);
-      setApiError(err?.response?.data?.message || "Failed to fetch candidates from Apollo.");
+      setSubmittingForm(true);
+      await generateAssessmentFromPayload(assessmentPayload);
     } finally {
-      setLoading(false);
+      setSubmittingForm(false);
+    }
+  };
+
+  const handleGenerateAssessment = async () => {
+    if (!jobSpecData) {
+      toast({
+        title: "Generate assessment",
+        description: "Fill and submit the form first so we can use your latest job specification.",
+      });
+      return;
+    }
+
+    await generateAssessmentFromPayload(jobSpecData);
+  };
+
+  const handleSendExam = async (candidateEmail: string, candidateName: string) => {
+    if (!assessment?._id) {
+      toast({
+        title: "Assessment not ready",
+        description: "Generate an assessment first before sending.",
+      });
+      return null;
+    }
+
+    try {
+      const response = await api.post("/assessments/send", {
+        assessmentId: assessment._id,
+        candidateEmail,
+        candidateName,
+      });
+
+      return response?.data?.data?.examLink || null;
+    } catch (err: any) {
+      const message = err?.response?.data?.message || "Failed to send assessment email.";
+      toast({
+        title: "Email delivery failed",
+        description: message,
+      });
+      return null;
+    }
+  };
+
+  const handleCreateExamLink = async (candidateEmail: string, candidateName: string) => {
+    if (!assessment?._id) {
+      toast({
+        title: "Assessment not ready",
+        description: "Generate an assessment first before creating a link.",
+      });
+      return null;
+    }
+
+    try {
+      const response = await api.post("/assessments/link", {
+        assessmentId: assessment._id,
+        candidateEmail,
+        candidateName,
+      });
+
+      return response?.data?.data?.examLink || null;
+    } catch (err: any) {
+      const message = err?.response?.data?.message || "Failed to create exam link.";
+      toast({
+        title: "Link creation failed",
+        description: message,
+      });
+      return null;
     }
   };
 
@@ -223,19 +340,27 @@ const JobSpecForm = ({ onSubmit }: JobSpecFormProps) => {
       {error ? <p className="text-sm text-red-500">{error}</p> : null}
 
       <div className="flex justify-end">
-        <Button type="submit" disabled={loading}>
-          {loading ? "Searching..." : "Search Candidates"}
+        <Button type="submit" disabled={submittingForm || assessmentLoading}>
+          {submittingForm || assessmentLoading ? "Generating..." : "Generate MCQ Assessment"}
         </Button>
       </div>
 
-      {apiError ? <p className="text-sm text-red-500">{apiError}</p> : null}
-
-      {!loading && candidates.length > 0 ? (
-        <div className="pt-2">
-          <h3 className="text-lg font-semibold mb-3">Matched Candidates</h3>
-          <CandidateList candidates={candidates} />
+      {jobSpecData ? (
+        <div className="rounded-md border bg-muted/20 px-3 py-2 text-xs text-muted-foreground">
+          Candidate sourcing is temporarily bypassed for testing. You can generate and open the exam link directly.
         </div>
       ) : null}
+
+      <AssessmentModal
+        open={assessmentOpen}
+        onOpenChange={setAssessmentOpen}
+        assessment={assessment}
+        loading={assessmentLoading}
+        error={assessmentError}
+        onRetry={handleGenerateAssessment}
+        onSendExam={handleSendExam}
+        onCreateExamLink={handleCreateExamLink}
+      />
     </form>
   );
 };

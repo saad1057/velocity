@@ -8,6 +8,11 @@ interface AuthContextType {
   token: string | null;
   loading: boolean;
   isAuthenticated: boolean;
+<<<<<<< HEAD
+=======
+  isAdmin: boolean;
+  isRecruiter: boolean;
+>>>>>>> 403a6001fe08692ce4f4ad0dc2dd5212ec8a4d79
   login: (data: SigninData) => Promise<void>;
   register: (data: SignupData) => Promise<void>;
   logout: () => Promise<void>;
@@ -151,6 +156,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     token,
     loading,
     isAuthenticated: !!user && !!token,
+<<<<<<< HEAD
+=======
+    isAdmin: user?.role === 'admin',
+    isRecruiter: user?.role === 'recruiter' || user?.role === 'admin',
+>>>>>>> 403a6001fe08692ce4f4ad0dc2dd5212ec8a4d79
     login,
     register,
     logout,

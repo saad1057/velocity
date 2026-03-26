@@ -14,6 +14,7 @@ const Signup = () => {
     companyName: "",
     email: "",
     password: "",
+    confirmPassword: ""
   });
   const [isLoading, setIsLoading] = useState(false);
   const [passwordError, setPasswordError] = useState("");
@@ -81,7 +82,6 @@ const Signup = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">First Name</Label>
@@ -114,6 +114,7 @@ const Signup = () => {
                   onChange={handleChange}
                 />
               </div>
+
               <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>
                 <Input

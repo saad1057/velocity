@@ -2,8 +2,6 @@ const User = require('../model/user');
 const { hashPassword, comparePassword } = require('../utils/password');
 const { generateToken } = require('../utils/jwt');
 
-
-
 const signup = async (userData) => {
   const { firstname, lastname, companyname, email, password } = userData;
 
@@ -20,6 +18,7 @@ const signup = async (userData) => {
     companyname,
     email,
     password: hashedPassword,
+    role: 'user'
   });
 
   const userObject = user.toObject();
@@ -38,12 +37,11 @@ const signin = async (email, password) => {
     throw new Error('Invalid email or password');
   }
 
-  const tokenParams = {
+  const token = generateToken({
     userId: user._id.toString(),
     email: user.email,
-  };
-
-  const token = generateToken(tokenParams);
+    role: user.role
+  });
 
   const userObject = user.toObject();
   delete userObject.password;
