@@ -84,7 +84,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           description: 'Logged in successfully',
         });
         
-        navigate('/dashboard');
+        if (userData.role === 'admin') {
+          navigate('/admin/dashboard');
+        } else {
+          navigate('/dashboard');
+        }
       }
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || 'Login failed. Please try again.';

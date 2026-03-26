@@ -19,7 +19,7 @@ export interface User {
   lastname?: string;
   companyname?: string;
   email: string;
-  role: 'user';
+  role: 'user' | 'admin';
   picture?: {
     data: string | Buffer;
     contentType: string;
