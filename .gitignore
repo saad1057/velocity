@@ -47,3 +47,7 @@ ai-service/*.pdf
 
 # Backend env (never commit real secrets)
 backend/.env
+
+# Local machine start scripts (do not commit)
+start_saad2.ps1
+ai-service/start_saad.ps1
