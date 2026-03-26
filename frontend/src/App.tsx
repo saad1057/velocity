@@ -24,13 +24,8 @@ import EmailTemplates from "./pages/EmailTemplates";
 import AIAssistant from "./pages/AIAssistant";
 import Assessments from "./pages/Assessments";
 import Preferences from "./pages/Preferences";
-<<<<<<< HEAD
-
-import NotFound from "./pages/NotFound"; // 404 handler
-=======
 import CandidateExam from "./pages/CandidateExam";
 import NotFound from "./pages/NotFound";
->>>>>>> 403a6001fe08692ce4f4ad0dc2dd5212ec8a4d79
 
 const queryClient = new QueryClient();
 
@@ -53,16 +48,7 @@ const App = () => (
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/exam/:token" element={<CandidateExam />} />
             
-<<<<<<< HEAD
-            {/* Protected routes - accessible to all authenticated users (recruiters) */}
-=======
-            {/* For admin-only routes, use: */}
-            {/* <ProtectedRoute adminOnly={true}>
-              <AdminOnlyComponent />
-            </ProtectedRoute> */}
-            
-            {/* Protected routes - accessible to all authenticated users (recruiters and admins) */}
->>>>>>> 403a6001fe08692ce4f4ad0dc2dd5212ec8a4d79
+            {/* Protected routes - accessible to all authenticated users */}
             <Route 
               path="/dashboard" 
               element={
