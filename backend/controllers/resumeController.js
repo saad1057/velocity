@@ -440,6 +440,13 @@ const skillsMatch = (requiredSkill, candidateSkill) => {
   const cand = String(candidateSkill || '').toLowerCase().trim();
   if (!req || !cand) return false;
 
+  const compact = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9+#]+/g, '');
+  const reqCompact = compact(req);
+  const candCompact = compact(cand);
+  if (reqCompact && candCompact && (candCompact.includes(reqCompact) || reqCompact.includes(candCompact))) {
+    return true;
+  }
+
   if (cand.includes(req) || req.includes(cand)) return true;
 
   const split = (s) =>
@@ -457,6 +464,83 @@ const skillsMatch = (requiredSkill, candidateSkill) => {
   const jaccard = overlap / (reqTokens.size + candTokens.size - overlap);
 
   return jaccard >= 0.25;
+};
+
+const escapeRegex = (s) => String(s || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+const skillAliases = (skill) => {
+  const s = String(skill || '').toLowerCase().trim();
+  if (!s) return [];
+
+  // Common aliases / variants
+  const base = new Set([s]);
+  base.add(s.replace(/\s+/g, ' '));
+  base.add(s.replace(/\s+/g, ''));
+  base.add(s.replace(/\./g, ''));
+  base.add(s.replace(/\.js$/g, 'js'));
+  base.add(s.replace(/js$/g, '.js'));
+
+  if (s === 'mongodb') {
+    base.add('mongo db');
+    base.add('mongo-db');
+  }
+  if (s === 'node' || s === 'nodejs' || s === 'node.js') {
+    base.add('node.js');
+    base.add('nodejs');
+    base.add('node');
+  }
+  if (s === 'next.js' || s === 'nextjs') {
+    base.add('next.js');
+    base.add('nextjs');
+  }
+  if (s === 'react native' || s === 'reactnative') {
+    base.add('react native');
+    base.add('reactnative');
+  }
+  if (s === 'power bi' || s === 'powerbi') {
+    base.add('power bi');
+    base.add('powerbi');
+  }
+
+  return [...base].filter(Boolean);
+};
+
+const isSkillPresentInResume = ({ requiredSkill, extractedSkills, resumeText }) => {
+  const req = String(requiredSkill || '').trim();
+  if (!req) return false;
+
+  const reqLower = req.toLowerCase().trim();
+
+  // Special case: MERN stack can appear as acronym OR as the component skills.
+  if (reqLower === 'mern') {
+    const mustHave = ['mongodb', 'express', 'react', 'node.js'];
+    const hits = mustHave.filter((x) => isSkillPresentInResume({ requiredSkill: x, extractedSkills, resumeText }));
+    return hits.length >= 3; // allow 3/4 because many resumes omit "express" explicitly
+  }
+
+  const candidates = skillAliases(req);
+
+  // 1) Check against extracted skills list (parsed.skills)
+  if (Array.isArray(extractedSkills) && extractedSkills.length) {
+    for (const candSkill of extractedSkills) {
+      for (const variant of candidates) {
+        if (skillsMatch(variant, candSkill)) return true;
+      }
+    }
+  }
+
+  // 2) Check against full resume text (covers parser misses)
+  const haystack = String(resumeText || '').toLowerCase();
+  if (haystack) {
+    for (const variant of candidates) {
+      const v = variant.toLowerCase().trim();
+      if (!v) continue;
+      const re = new RegExp(`(^|[^a-z0-9+#])${escapeRegex(v)}([^a-z0-9+#]|$)`, 'i');
+      if (re.test(haystack)) return true;
+    }
+  }
+
+  return false;
 };
 
 const buildResumeTextForScoring = (parsed) => {
@@ -588,7 +672,11 @@ const buildResumeInsights = async ({ parsed, position, description }) => {
   const missingSkills = [];
 
   for (const req of requiredSkills) {
-    const isPresent = skills.some((cand) => skillsMatch(req, cand));
+    const isPresent = isSkillPresentInResume({
+      requiredSkill: req,
+      extractedSkills: skills,
+      resumeText,
+    });
     if (isPresent) presentSkills.push(req);
     else missingSkills.push(req);
   }
