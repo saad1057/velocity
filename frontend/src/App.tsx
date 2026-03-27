@@ -21,7 +21,6 @@ import Contact from "./pages/Contact";
 import Pricing from "./pages/Pricing";
 import ResumeParser from "./pages/ResumeParser";
 import EmailTemplates from "./pages/EmailTemplates";
-import AIAssistant from "./pages/AIAssistant";
 import Assessments from "./pages/Assessments";
 import Preferences from "./pages/Preferences";
 import CandidateExam from "./pages/CandidateExam";
@@ -106,14 +105,6 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <EmailTemplates />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/ai-assistant" 
-              element={
-                <ProtectedRoute>
-                  <AIAssistant />
                 </ProtectedRoute>
               } 
             />
