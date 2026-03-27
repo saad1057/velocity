@@ -19,7 +19,8 @@ export function useChatbot() {
     setLoading(true);
 
     try {
-      const res = await api.post("/recruitment/chat", {
+      // Reverted to original gemini endpoint
+      const res = await api.post("/recruitment-chat/chat", {
         messages: updatedMessages.map((m) => ({ role: m.role, content: m.content })),
       });
 
@@ -46,4 +47,3 @@ export function useChatbot() {
 
   return { messages, loading, sendMessage };
 }
-

@@ -34,9 +34,6 @@ router.post("/chat", async (req, res) => {
       });
     }
 
-    // To avoid issues with role/content shapes, send the full conversation
-    // as a single user prompt. This prevents Gemini from hanging on
-    // unexpected `model`/`user` role formatting.
     const lastMessages = messages
       .filter((m) => m && typeof m.content === "string" && m.content.trim().length > 0)
       .slice(-12);
@@ -49,15 +46,12 @@ router.post("/chat", async (req, res) => {
       return res.status(400).json({ error: "messages must include non-empty content" });
     }
 
-    // Keep prompt size bounded to avoid long/slow requests.
     const MAX_CONVERSATION_CHARS = 6000;
     const boundedConversationText =
       conversationText.length > MAX_CONVERSATION_CHARS
         ? conversationText.slice(-MAX_CONVERSATION_CHARS)
         : conversationText;
 
-    // Use a model that is known to support `generateContent` on v1beta.
-    // (Your REST `models?key=` call shows Gemini 2.5 Flash supports it.)
     const model = "gemini-2.5-flash";
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GEMINI_API_KEY}`;
 
@@ -77,13 +71,10 @@ router.post("/chat", async (req, res) => {
       },
     };
 
-    const startedAt = Date.now();
-    console.log("Gemini chat request started");
     const response = await axios.post(url, payload, {
       headers: { "Content-Type": "application/json" },
-      timeout: 60000, // Prevent "Typing..." forever
+      timeout: 60000, 
     });
-    console.log("Gemini chat request finished", { ms: Date.now() - startedAt });
 
     const reply =
       response?.data?.candidates?.[0]?.content?.parts?.map((p) => p?.text).filter(Boolean).join("") ||
@@ -104,4 +95,3 @@ router.post("/chat", async (req, res) => {
 });
 
 module.exports = router;
-
