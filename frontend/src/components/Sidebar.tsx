@@ -49,7 +49,6 @@ const Sidebar = () => {
   const toolsItems = [
     { icon: Mail, label: "Email Templates", path: "/email-templates" },
     { icon: FileText, label: "Resume Parser", path: "/resume-parser" },
-    { icon: Bot, label: "AI Assistant", path: "/ai-assistant" },
   ];
   
   const settingsItems = [
