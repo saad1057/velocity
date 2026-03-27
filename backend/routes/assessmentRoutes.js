@@ -5,7 +5,7 @@ const Assessment = require("../model/Assessment");
 const ExamAttempt = require("../model/ExamAttempt");
 const { authenticate } = require("../middleware/auth");
 
-const router = express.Router();
+const router = express.Router(); //used to define api routes
 const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
 
 const stringifyField = (value) => {
@@ -33,7 +33,7 @@ const getOptionLetter = (option, index) => {
   return String.fromCharCode(65 + index);
 };
 
-const createTransporter = () => {
+const createTransporter = () => { //related to mails wala kaam
   const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM } = process.env;
 
   if (!SMTP_HOST || !SMTP_PORT || !SMTP_USER || !SMTP_PASS || !SMTP_FROM) {
@@ -51,7 +51,7 @@ const createTransporter = () => {
   });
 };
 
-const sanitizeQuestionsForCandidate = (assessment) =>
+const sanitizeQuestionsForCandidate = (assessment) => //to remove sensitive data before sending to candidate
   assessment.questions.map((question) => ({
     question: question.question,
     options: question.options,

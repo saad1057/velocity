@@ -64,8 +64,8 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className="w-64 bg-card border-r border-border min-h-screen p-6 overflow-y-auto" ref={sidebarRef}>
-      <nav className="space-y-8">
+    <aside className="w-64 bg-card border-r border-border min-h-screen flex flex-col">
+      <nav className="space-y-8 p-6 pr-2 overflow-y-auto flex-1 sidebar-nav-scroll" ref={sidebarRef}>
         {/* Admin Section (Conditional) */}
         {user?.role === 'admin' && (
           <div className="space-y-2">
