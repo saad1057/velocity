@@ -79,13 +79,13 @@ app.use('/api/jobs', jobRoutes);
 // Admin Routes
 app.use('/api/admin', adminRoutes);
 
-app.get('/', (req, res) => {
-  res.json({ message: 'Velocity API is running' });
-});
-app.post("/", (req, res) => {
-    res.send("POST request received");
+app.get('/api/debug-version', (req, res) => {
+  res.json({
+    version: "candidate-response-normalized-v1",
+    time: new Date().toISOString()
   });
-  
+});
+
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });

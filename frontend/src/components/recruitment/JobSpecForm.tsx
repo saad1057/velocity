@@ -191,10 +191,37 @@ const JobSpecForm = ({ onSubmit }: JobSpecFormProps) => {
       const response = await api.post("/recruitment/search", {
         jobId: savedJob._id,
       });
-      setCandidates(response.data.data || []);
+      
+      const payload = response.data;
+      console.log("🔥 FIND CANDIDATES RAW RESPONSE:", payload);
+
+      const receivedCandidates = 
+        Array.isArray(payload?.candidates) 
+          ? payload.candidates 
+          : Array.isArray(payload?.data) 
+            ? payload.data 
+            : Array.isArray(payload?.results) 
+              ? payload.results 
+              : [];
+
+      console.log("🔥 NORMALIZED FRONTEND CANDIDATES:", receivedCandidates);
+      console.log("🔥 NORMALIZED FRONTEND CANDIDATES LENGTH:", receivedCandidates.length);
+      
+      setCandidates(receivedCandidates);
+      
+      if (receivedCandidates.length > 0) {
+        setCandidatesError("");
+        setHasSearched(true);
+      } else {
+        setHasSearched(true);
+        setCandidatesError(payload?.message || "No candidates found.");
+      }
+
       toast({
-        title: "Candidates found",
-        description: `Successfully loaded ${response.data.data?.length || 0} candidates.`,
+        title: receivedCandidates.length > 0 ? "Candidates found" : "No results",
+        description: receivedCandidates.length > 0 
+          ? `Successfully loaded ${receivedCandidates.length} candidates.`
+          : payload?.message || "No candidates matched your criteria.",
       });
     } catch (err: any) {
       const message = err?.response?.data?.message || "Candidate sourcing failed. Please try again.";
